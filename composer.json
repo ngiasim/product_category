@@ -1,0 +1,14 @@
+{
+    "name": "ngiasim/product_category",
+    "description": "Package for categories and products CRUD",
+    "authors": [
+        {
+            "name": "Asim Zubair",
+            "email": "asim@nextgeni.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.0"
+    }
+}
