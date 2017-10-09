@@ -190,7 +190,7 @@
   CKEDITOR.replaceClass = 'description';
   
   $(document).ready(function() {
-    //$.noConflict();
+    $.noConflict();
     $(".rtl").arabisk();
 
     $('#add_tags').on('click', function (e) {
