@@ -161,6 +161,7 @@ class ProductController extends Controller
                         $product['meta_keywords'] = $value[1];
                         $product['meta_description'] = $value[2];
                         $product['fk_product_status'] = 1;
+                        $product['base_price'] = 200;
 
                         $product_desc['products_name'] = $value[3];
                         $product_desc['products_description'] = $value[4];
