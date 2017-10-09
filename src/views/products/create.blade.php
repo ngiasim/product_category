@@ -135,7 +135,7 @@
   CKEDITOR.replaceClass = 'description';
   
   $(document).ready(function() {
-    //$.noConflict();
+    $.noConflict();
     $(".rtl").arabisk();
  
   });
