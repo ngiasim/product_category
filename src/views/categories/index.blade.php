@@ -56,7 +56,7 @@
 
 <script>
   $(document).ready(function() {
-    //$.noConflict();
+    $.noConflict();
     $('#table_data').dataTable({
       "pageLength": 10,
        "bSort": false
