@@ -3,15 +3,20 @@
 namespace Ngiasim\Categories;
 use App\Http\Controllers\Controller;
 
-
 use Illuminate\Http\Request;
 use App\Product;
 use App\Product_description;
 use App\Language;
 use App\Product_status;
 use App\Category;
+use App\Category_description;
 use App\Map_product_category;
+use App\Upload_files;
+use Carbon\Carbon;
 
+use App\Jobs\UploadProductsCsvJob;
+
+use DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
@@ -23,8 +28,18 @@ class ProductController extends Controller
 
     public function index()
     {
-       $products =  Product::with('productsDescription')->get();
-       return view('products::index',compact('products'));
+        $products =  Product::with('productsDescription')->take(100)->get();
+        return view('products::index',compact('products'));
+    }
+
+    public function selectAll()
+    {
+       $products =  Product::get();
+       $results = ["sEcho" => 1,
+            "iTotalRecords" => count($products),
+            "iTotalDisplayRecords" => count($products),
+            "aaData" => $products ];
+       echo json_encode($results);
     }
     
     public function create()
@@ -139,51 +154,92 @@ class ProductController extends Controller
     }
 
     public function storeCSV(Request $request){
-        
+            
             $response = '';
-            $file_path = file_get_contents($request->upload_csv->getPathName());
-            $file_name = time().'.'.$request->upload_csv->getClientOriginalExtension();
-            $request->upload_csv->move(public_path('js'), $file_name);
 
-            $path = public_path('js/').$file_name;
+            //$get_contents = file_get_contents($request->upload_csv->getPathName());
+            $file_name = time().'.'.$request->upload_csv->getClientOriginalExtension();
+            $request->upload_csv->move(public_path('files/products/'), $file_name);
+
+            $file_path = public_path('files/products/');
+            $record['file_name'] = $file_name;
+            $record['file_path'] = $file_path;
+
+            $upload_files_id = Upload_files::addUploadedFile($record);
+            $path = public_path('files/products/').$file_name;
+/*
             $fileD = fopen($path,"r");
             $column=fgetcsv($fileD);
             while(!feof($fileD)){
              $rowData[]=fgetcsv($fileD);
             }
+            echo '<pre>';
+            print_r($rowData);
+            exit;*/
 
-            $response = array();
-            foreach ($rowData as $key => $value) {
-                if($value[0] != ''){
 
-                    $alreadyExists = Product::where(['products_sku'=>$value[0]])->first();
-                        $product['products_sku'] = $value[0];
-                        $product['meta_keywords'] = $value[1];
-                        $product['meta_description'] = $value[2];
-                        $product['fk_product_status'] = 1;
-                        $product['base_price'] = 200;
+            UploadProductsCsvJob::dispatch($upload_files_id,$path)->delay(Carbon::now()->addSeconds(2));
+            //exec('cd ../ && php artisan queue:work --queue=default --timeout=1800 --tries=1');
 
-                        $product_desc['products_name'] = $value[3];
-                        $product_desc['products_description'] = $value[4];
-
-                    if(empty($alreadyExists)){ 
-                        $fk_product = Product::addProducts($product); 
-                        Product_description::addProductsDescriptions($product_desc,$fk_product); 
-                        $response[] = array('sku'=>$product['products_sku'],'name'=>$product_desc['products_name'],'status'=>'Product Added','color'=>'#60d45e');
-                    }else{
-                        Product::updateProducts($product,$alreadyExists['product_id']); 
-                        $response[] = array('sku'=>$product['products_sku'],'name'=>$product_desc['products_name'],'status'=>'Product Updated','color'=>'#6487d6');
-                    }
-                    
-                }
-            }
-
-            return view('products::bulkupload',compact('response'));
-        
+            //->delay(Carbon::now()->addSeconds(2));
+            //cd ../ && composer update
+            //exec('cd ../ && php artisan queue:work --queue=default --timeout=1800 --tries=1');
+            return view('products::bulkupload',compact('response'));    
     }
     
-     
-    
+     /*
+    public function categoriesLookup($lookup)
+    {
+        $arr = explode("|",$lookup['English']);
+        $total = count($arr);
+        $id_parent = 0;
+        $last_created = false;
+        $cat = array();
+        for($i=0;$i<$total;$i++){
+            $cat_name = $arr[$i];
+            if(!$last_created){
+               
+               //$cat = Category_description::select('fk_category')->where(['category_name'=>$cat_name])->first();
+               //$cat = Category::select('category_id')->with('categoriesDescription')->where(['id_parent'=>$id_parent,'category_description.category_name'=>$cat_name])->first();
+
+                $cat = DB::table('category')
+                ->join('category_description', 'category.category_id', '=', 'category_description.fk_category')
+                ->select('category.category_id')
+                ->where(['category.id_parent'=>$id_parent,'category_description.category_name'=>ucwords($cat_name)])
+
+                ->first();
+
+
+                //->where(['category.id_parent'=>$id_parent,'category_description.category_name'=>$cat_name])
+
+                //strtolower()
+                // Converting Std Class object to array 
+                $cat = json_decode(json_encode($cat), true);
+
+            }
+            if(empty($cat)){
+                $request = array();
+                $request['id_parent'] = $id_parent;
+                $request['category_link'] = $cat_name;
+                $request['sort_order'] = 0;
+                $request['meta_keywords'] = $cat_name;
+                $request['meta_description'] = $cat_name;
+                $category_id = Category::addCategories($request); 
+
+                $request['category_name'] = [1=>ucwords($cat_name),2=>$cat_name];
+                $request['category_description'] = [1=>$cat_name,2=>$cat_name];
+                Category_description::addCategoriesDescription($request,$category_id); 
+
+                $last_created = true;
+                $id_parent = $category_id;
+            }else{
+                $id_parent = $cat['category_id'];
+            }
+        }
+        return $id_parent;
+    }*/
+
+
     public function destroy($product_id)
     {
         Product::deleteProducts($product_id);

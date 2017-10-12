@@ -24,14 +24,14 @@
 
                 <div class="panel-body">
                     
-                    {!! Form::open(['url' => 'products/storecsv','id'=>'form_add_product','files' => true]) !!}
+                    {!! Form::open(['url' => 'products/storecsv','id'=>'form_upload','files' => true]) !!}
 
                       <div class="form-group row">
                         {{ Form::label('Upload Products CSV: ', null, ['class' => 'col-sm-3 col-form-label col-form-label-lg']) }}
                           <div class="col-sm-5">
                              
                               {{Form::file('upload_csv',array('required', 
-                                  'class'=>'form-control form-control-lg'))}}
+                                  'class'=>'form-control form-control-lg','id'=>'upload_csv'))}}
                           </div>
                         </div>
                         
@@ -96,16 +96,14 @@
 <script>
  
 
-  $("#form_add_product").validate({
+  $("#form_upload").validate({
       rules: {
-        products_name: {
-          required: true,
-          minlength: 2,
-          maxlength: 60,
+        upload_csv: {
+                required: true,
+                extension: "csv"
         }
       },
       messages: {
-        products_name: "Please select a Product Status",
       }
     });
 

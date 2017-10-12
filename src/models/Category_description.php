@@ -35,7 +35,7 @@ class Category_description extends Model
     }
 
     protected function addCategoriesDescription($request,$fk_category){
-        foreach($request->category_name as $key=>$val){
+        foreach($request['category_name'] as $key=>$val){
             $obj = new Category_description;
             $obj->fill([
                 'fk_language'            => $key,

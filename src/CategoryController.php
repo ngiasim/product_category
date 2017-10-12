@@ -7,9 +7,12 @@ use Illuminate\Http\Request;
 use App\Category;
 use App\Category_description;
 use App\Language;
+use App\Map_product_category;
+
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
+
 
 class CategoryController extends Controller
 {
@@ -114,8 +117,9 @@ class CategoryController extends Controller
             if($row['id_parent'] == 0){ $span = ''; }
 
             $this->globalRecursive[$this->globalIteration]['category_id'] = $row['category_id'];
-            $this->globalRecursive[$this->globalIteration]['category_name'] = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',$indent).$span.' '.$row['categories_description']['category_name'];
+            $this->globalRecursive[$this->globalIteration]['category_name'] = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',$indent).$span.' '.$row['categories_description']['category_name'];
             $this->globalRecursive[$this->globalIteration]['category_description'] = $row['categories_description']['category_description'];
+            $this->globalRecursive[$this->globalIteration]['products'] = Map_product_category::where(['fk_category' => $row['category_id']])->count();
             
             $this->globalIteration++;
             if (!empty($row['children_recursive'])){

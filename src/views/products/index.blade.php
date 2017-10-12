@@ -32,7 +32,7 @@
             <th>Action</th>
           </tr>
         </thead>
-       
+        
         <tbody>
           @foreach($products as $row)
           <tr>
@@ -50,6 +50,7 @@
           </tr>
           @endforeach
         </tbody>
+       
       </table>
     </div>
   </div>
@@ -60,12 +61,14 @@
 
 
 <script>
+
   $(document).ready(function() {
     $.noConflict();
     $('#table_data').dataTable({
-      "pageLength": 10
+      "pageLength": 10,
     });
   });
+
  </script>
 
 @endsection

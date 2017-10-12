@@ -58,12 +58,13 @@ class Category extends Model
     }
 
     protected function addCategories($request){
-    	$this->fill([
-                'id_parent'            => $request->id_parent,
-                'category_link'        => $request->category_link,
-                'sort_order'           => $request->sort_order,
-                'meta_keywords'        => $request->meta_keywords,
-                'meta_description'     => $request->meta_description
+
+        $this->fill([
+                'id_parent'            => $request['id_parent'],
+                'category_link'        => $request['category_link'],
+                'sort_order'           => $request['sort_order'],
+                'meta_keywords'        => $request['meta_keywords'],
+                'meta_description'     => $request['meta_description']
             ]);
 
             $this->save();
@@ -73,7 +74,7 @@ class Category extends Model
     protected function updateCategories($request,$id){
         $categories = $this->find($id);
         $categories->id_parent          = $request->id_parent;
-        $categories->category_link    = $request->category_link;
+        $categories->category_link      = $request->category_link;
         $categories->sort_order         = $request->sort_order;
         $categories->meta_keywords      = $request->meta_keywords;
         $categories->meta_description   = $request->meta_description;

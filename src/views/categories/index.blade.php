@@ -25,6 +25,7 @@
             <th>ID</th>
             <th>Category Name</th>
             <th>Category Description</th>
+            <th>Products Count</th>
             <th style="width:150px;">Action</th>
           </tr>
         </thead>
@@ -36,6 +37,7 @@
                 <td><?=$row['category_id']?></td>
                 <td><?=$row['category_name']?></td>
                 <td><?=$row['category_description']?></td>
+                <td><?=$row['products']?></td>
                 <td><a style="float:left;margin-right: 10px;" href="{{url('categories/'.$row['category_id'].'/edit')}}"><i class="glyphicon glyphicon-pencil"></i></a>
                   {!! Form::open(['method'=>'DELETE','url' => 'categories/'.$row['category_id']]) !!}
                     <button type="submit" class="glyphicon glyphicon-trash"></button>
@@ -57,7 +59,7 @@
 <script>
   $(document).ready(function() {
     $.noConflict();
-    $('#table_data').dataTable({
+    $('#table_datass').dataTable({
       "pageLength": 10,
        "bSort": false
     });

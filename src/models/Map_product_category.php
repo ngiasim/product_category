@@ -19,15 +19,15 @@ class Map_product_category extends Model
 
     protected function addProductCategory($request){
             
-        $alreadyExists = $this->where(['fk_category'=>$request->category_id,'fk_product'=>$request->product_id])->first();
+        $alreadyExists = $this->where(['fk_category'=>$request['category_id'],'fk_product'=>$request['product_id']])->first();
         if(empty($alreadyExists)){
             $this->fill([
-                'fk_category'           => $request->category_id,
-                'fk_product'            => $request->product_id,
+                'fk_category'           => $request['category_id'],
+                'fk_product'            => $request['product_id'],
                 'sort_order'            => 1
             ]);
             $this->save();
-            return array('category_id'=>$request->category_id,'tag_id'=>$this->map_product_category_id);
+            return array('category_id'=>$request['category_id'],'tag_id'=>$this->map_product_category_id);
         }
         return '';
 

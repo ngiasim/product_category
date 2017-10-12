@@ -12,6 +12,9 @@ Route::group([
 	Route::post('products/storecsv','ngiasim\categories\ProductController@storeCSV');
 
 
+	Route::get('products/selectall','ngiasim\categories\ProductController@selectAll');
+	
+
 	Route::post('products/addTags','ngiasim\categories\ProductController@addTags');
 	Route::get('products/removeTags/{id}','ngiasim\categories\ProductController@removeTags');
 
