@@ -37,7 +37,7 @@ class CategoriesServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        include __DIR__.'/routes.php';
+        include __DIR__.'/Routes.php';
         $this->app->make('Ngiasim\Categories\CategoryController');
         $this->app->make('Ngiasim\Categories\ProductController');
     }
