@@ -2,6 +2,11 @@
 @extends('layouts.cockpit_master')
 @section('content')
 
+<style>
+.error{
+  color:#ff7272 !important;
+  }
+</style>
 <div class="container">
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
