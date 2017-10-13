@@ -28,7 +28,8 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products =  Product::with('productsDescription')->take(100)->get();
+        //$products =  Product::with('productsDescription')->take(100)->get();
+        $products =  Product::with('productsDescription')->simplePaginate(100);
         return view('products::index',compact('products'));
     }
 
