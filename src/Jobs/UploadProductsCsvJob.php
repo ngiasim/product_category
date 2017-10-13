@@ -2,13 +2,13 @@
 
 namespace App\Jobs;
 
-use App\Upload_files;
+use App\Bulk_uploads;
 use App\Product;
 use App\Product_description;
 use App\Category;
 use App\Category_description;
 use App\Map_product_category;
-use App\Map_product_upload_files;
+use App\Log_product_bulk_uploads;
 use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -20,22 +20,18 @@ class UploadProductsCsvJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $upload_files_id;
-    protected $path;
-    protected $cat_count=1;
 
-    public function __construct($upload_files_id,$path)
+    protected $bulk_uploads_id;
+    protected $path;
+    protected $count_categories_added=0;
+
+    public function __construct($bulk_uploads_id,$path)
     {
-        $this->upload_files_id  = $upload_files_id;
+        $this->bulk_uploads_id  = $bulk_uploads_id;
         $this->path             = $path;
     }
 
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
         ini_set('max_execution_time', 45000); 
@@ -46,19 +42,16 @@ class UploadProductsCsvJob implements ShouldQueue
             }
             
             $response = array();
-            $rows_count = count($rowData);
+            $rows_count = count($rowData)-1; 
+            $summary = json_encode(array('products_added'=>0,'products_updated'=>0,'categories_added'=>0));
 
-            $record = array('rows_count'=>$rows_count);
-            Upload_files::updateRowCount($record,$this->upload_files_id); 
+            Bulk_uploads::updateUploadedFile($this->bulk_uploads_id,$rows_count,1,$summary); 
 
-            $record = array('status'=>1);
-            Upload_files::updateStatus($record,$this->upload_files_id); 
-
-            $product_count=1;
+            $count_products_added   = 0;
+            $count_products_updated = 0;
             try {
                 foreach ($rowData as $key => $value) {
                     if($value[0] != ''){
-
                         
                             $product['products_sku'] = $value[0];
                             $product['meta_keywords'] = $value[1];
@@ -84,38 +77,37 @@ class UploadProductsCsvJob implements ShouldQueue
                             $product_category_map['product_id'] = $fk_product;
                             Map_product_category::addProductCategory($product_category_map); 
 
-                            $record = array('fk_upload_files'=>$this->upload_files_id,'fk_product'=>$fk_product);
-                            Map_product_upload_files::addProductFileId($record); 
+                            $record = array('fk_bulk_uploads'=>$this->bulk_uploads_id,'fk_product'=>$fk_product);
+                            Log_product_bulk_uploads::addProductFileId($record); 
 
+                            $count_products_added++;
                         }else{
                             Product::updateProducts($product,$alreadyExists['product_id']); 
                             //$response[] = array('sku'=>$product['products_sku'],'name'=>$product_desc['products_name'],'status'=>'Product Updated','color'=>'#6487d6');
                             
-                            $record = array('fk_upload_files'=>$this->upload_files_id,'fk_product'=>$alreadyExists['product_id']);
-                            Map_product_upload_files::addProductFileId($record); 
+                            $record = array('fk_bulk_uploads'=>$this->bulk_uploads_id,'fk_product'=>$alreadyExists['product_id']);
+                            Log_product_bulk_uploads::addProductFileId($record); 
 
+                            $count_products_updated++;
                         }
 
-                        $record = array('products_added'=>$product_count);
-                        Upload_files::updateProductsCount($record,$this->upload_files_id); 
 
-                        $product_count++;
-                        
+                    $summary = json_encode(array('products_added'=>$count_products_added,'products_updated'=>$count_products_updated,'categories_added'=>$this->count_categories_added));
+                    Bulk_uploads::updateUploadedFile($this->bulk_uploads_id,0,0,$summary);  
+    
                     }
                 }
             }
             catch(Exception $e) {
-                $record = array('status'=>2);
-                Upload_files::updateStatus($record,$this->upload_files_id); 
+                Bulk_uploads::updateUploadedFile($this->bulk_uploads_id,0,2); 
             }
-        $record = array('status'=>3);
-        Upload_files::updateStatus($record,$this->upload_files_id); 
+
+        Bulk_uploads::updateUploadedFile($this->bulk_uploads_id,0,3); 
     }
 
     public function failed(Exception $exception)
     {
-        $record = array('status'=>2);
-        Upload_files::updateStatus($record,$this->upload_files_id); 
+        Bulk_uploads::updateUploadedFile($this->bulk_uploads_id,0,2); 
     }
 
     public function categoriesLookup($lookup)
@@ -129,9 +121,6 @@ class UploadProductsCsvJob implements ShouldQueue
             $cat_name = $arr[$i];
             if(!$last_created){
                
-               //$cat = Category_description::select('fk_category')->where(['category_name'=>$cat_name])->first();
-               //$cat = Category::select('category_id')->with('categoriesDescription')->where(['id_parent'=>$id_parent,'category_description.category_name'=>$cat_name])->first();
-
                 $cat = DB::table('category')
                 ->join('category_description', 'category.category_id', '=', 'category_description.fk_category')
                 ->select('category.category_id')
@@ -139,10 +128,6 @@ class UploadProductsCsvJob implements ShouldQueue
 
                 ->first();
 
-
-                //->where(['category.id_parent'=>$id_parent,'category_description.category_name'=>$cat_name])
-
-                //strtolower()
                 // Converting Std Class object to array 
                 $cat = json_decode(json_encode($cat), true);
 
@@ -159,10 +144,8 @@ class UploadProductsCsvJob implements ShouldQueue
                 $request['category_name'] = [1=>ucwords($cat_name),2=>$cat_name];
                 $request['category_description'] = [1=>$cat_name,2=>$cat_name];
                 Category_description::addCategoriesDescription($request,$category_id); 
-
-                $record = array('categories_added'=>$this->cat_count);
-                Upload_files::updateCategoriesCount($record,$this->upload_files_id); 
-                $this->cat_count++;
+ 
+                $this->count_categories_added++;
 
                 $last_created = true;
                 $id_parent = $category_id;

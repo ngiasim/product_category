@@ -2,20 +2,6 @@
 @extends('layouts.cockpit_master')
 @section('content')
 
-<style>
-.error{
-  color:#ff7272;
-  }
-  input[type="text"] {
-    color: black !important;
-  }
-</style>
-
-
-<!-- <script src="{{url('ckeditor/ckeditor.js')}}"></script>
- -->
-<script src="{{url('js/arabic.js')}}"></script>
-<script src="https://cdn.ckeditor.com/4.7.3/basic/ckeditor.js"></script>
 <div class="container">
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
@@ -55,29 +41,11 @@
    <div class="row">
         <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default">
-                <div class="panel-heading">Products Upload Status</div>
+                <div class="panel-heading">Kindly follow the link to check upload status.</div>
 
                 <div class="panel-body">
 
-                      <table class="table table-bordered" id="tbl_categories_tagged">
-                        <thead>
-                          <tr>
-                            <th>SKU</th>
-                            <th>Product Name</th>
-                            <th>Status</th>
-                          </tr>
-                        </thead>
-                       
-                        <tbody>
-                          @foreach($response as $row)
-                          <tr style="color:white;background-color:{{$row['color']}}">
-                            <td>{{$row['sku']}}</td>
-                            <td>{{$row['name']}}</td>
-                            <td>{{$row['status']}}</td>
-                           </tr>
-                          @endforeach
-                        </tbody>
-                      </table>
+                      <a target="_blank" href="{{url('products/uploadstatus/'.$response)}}">{{url('products/uploadstatus/'.$response)}}</a>
 
                     
                 </div>

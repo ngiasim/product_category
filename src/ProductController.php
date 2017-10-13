@@ -11,7 +11,7 @@ use App\Product_status;
 use App\Category;
 use App\Category_description;
 use App\Map_product_category;
-use App\Upload_files;
+use App\Bulk_uploads;
 use Carbon\Carbon;
 
 use App\Jobs\UploadProductsCsvJob;
@@ -165,80 +165,59 @@ class ProductController extends Controller
             $record['file_name'] = $file_name;
             $record['file_path'] = $file_path;
 
-            $upload_files_id = Upload_files::addUploadedFile($record);
+            $bulk_uploads_id = Bulk_uploads::addUploadedFile($record);
             $path = public_path('files/products/').$file_name;
-/*
-            $fileD = fopen($path,"r");
-            $column=fgetcsv($fileD);
-            while(!feof($fileD)){
-             $rowData[]=fgetcsv($fileD);
-            }
-            echo '<pre>';
-            print_r($rowData);
-            exit;*/
 
 
-            UploadProductsCsvJob::dispatch($upload_files_id,$path)->delay(Carbon::now()->addSeconds(2));
+            UploadProductsCsvJob::dispatch($bulk_uploads_id,$path);
             //exec('cd ../ && php artisan queue:work --queue=default --timeout=1800 --tries=1');
 
-            //->delay(Carbon::now()->addSeconds(2));
-            //cd ../ && composer update
-            //exec('cd ../ && php artisan queue:work --queue=default --timeout=1800 --tries=1');
+            $response = $bulk_uploads_id;
             return view('products::bulkupload',compact('response'));    
     }
     
-     /*
-    public function categoriesLookup($lookup)
-    {
-        $arr = explode("|",$lookup['English']);
-        $total = count($arr);
-        $id_parent = 0;
-        $last_created = false;
-        $cat = array();
-        for($i=0;$i<$total;$i++){
-            $cat_name = $arr[$i];
-            if(!$last_created){
-               
-               //$cat = Category_description::select('fk_category')->where(['category_name'=>$cat_name])->first();
-               //$cat = Category::select('category_id')->with('categoriesDescription')->where(['id_parent'=>$id_parent,'category_description.category_name'=>$cat_name])->first();
+    public function uploadStatus($bulk_uploads_id){
+            
+            $response = Bulk_uploads::getUploadedFileById($bulk_uploads_id);
+            return view('products::uploadstatus',compact('response'));    
+    }
 
-                $cat = DB::table('category')
-                ->join('category_description', 'category.category_id', '=', 'category_description.fk_category')
-                ->select('category.category_id')
-                ->where(['category.id_parent'=>$id_parent,'category_description.category_name'=>ucwords($cat_name)])
+    public function ajaxUploadStatus(Request $request){
+            
+        $response = Bulk_uploads::getUploadedFileById($request['bulk_uploads_id']);
+        $arr = array();
+        foreach($response as $row){
+            $arr['rows_count']          = $row['rows_count'];
+            $summary = json_decode($row['summary']);
+            $arr['products_added']      = $summary->products_added;
+            $arr['products_updated']    = $summary->products_updated;
+            $arr['categories_added']    = $summary->categories_added;
+            
+            $arr['percent'] = round((($summary->products_added+$summary->products_updated) / $row['rows_count'] ) * 100,2).' %';
 
-                ->first();
-
-
-                //->where(['category.id_parent'=>$id_parent,'category_description.category_name'=>$cat_name])
-
-                //strtolower()
-                // Converting Std Class object to array 
-                $cat = json_decode(json_encode($cat), true);
-
+            if($row['status'] ==0){
+                $arr['status'] = 'Uploading has not started yet.';
             }
-            if(empty($cat)){
-                $request = array();
-                $request['id_parent'] = $id_parent;
-                $request['category_link'] = $cat_name;
-                $request['sort_order'] = 0;
-                $request['meta_keywords'] = $cat_name;
-                $request['meta_description'] = $cat_name;
-                $category_id = Category::addCategories($request); 
-
-                $request['category_name'] = [1=>ucwords($cat_name),2=>$cat_name];
-                $request['category_description'] = [1=>$cat_name,2=>$cat_name];
-                Category_description::addCategoriesDescription($request,$category_id); 
-
-                $last_created = true;
-                $id_parent = $category_id;
-            }else{
-                $id_parent = $cat['category_id'];
+            elseif($row['status'] ==1){
+                $arr['status'] = 'Uploading started.';
+            }
+            elseif($row['status'] ==2){
+                $arr['status'] = 'Uploading Error.';
+            }
+            else{
+                $arr['status'] = 'Successfully Uploaded';
             }
         }
-        return $id_parent;
-    }*/
 
+        return response()->json($arr);  
+    }
+    
+    public function triggerQueue(Request $request){   
+       
+       exec('cd ../ && php artisan queue:work --tries=1');
+
+    }
+    
 
     public function destroy($product_id)
     {
