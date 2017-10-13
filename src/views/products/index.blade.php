@@ -55,7 +55,7 @@
     </div>
   </div>
 
-
+{{ $products->links() }}
   </div>
 </div>
 
@@ -64,7 +64,7 @@
 
   $(document).ready(function() {
     $.noConflict();
-    $('#table_data').dataTable({
+    $('#table_datasss').dataTable({
       "pageLength": 10,
     });
   });
