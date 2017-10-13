@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Product_status extends Model
 {
 	use SoftDeletes;
-	protected $table = 'Product_status';
+	protected $table = 'product_status';
     protected $fillable = ['status_code','status_name'];
 
     protected function getAllStatuses(){
