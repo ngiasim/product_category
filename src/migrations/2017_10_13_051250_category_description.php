@@ -19,7 +19,7 @@ class CategoryDescription extends Migration
             $table->integer('fk_language',2)->unsigned();
             $table->integer('fk_category', 15);
             $table->string('category_name', 64)->default('NULL');
-            $table->text('category_description')->default('NULL');
+            $table->text('category_description');
             $table->timestamps();
             $table->softDeletes();
         });
