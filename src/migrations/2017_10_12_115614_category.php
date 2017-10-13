@@ -16,7 +16,7 @@ class Category extends Migration
         Schema::create('category', function(Blueprint $table)
         {
             $table->increments('category_id',15);
-            $table->integer('id_parent',2)->unsigned()->default(0);
+            $table->integer('id_parent')->unsigned()->default(0);
             $table->string('category_link', 255)->default('NULL');
             $table->integer('sort_order')->default(0);
             $table->string('meta_keywords', 255)->default('NULL');
