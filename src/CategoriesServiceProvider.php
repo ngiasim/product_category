@@ -15,6 +15,7 @@ class CategoriesServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/views/categories', 'categories');
         $this->loadViewsFrom(__DIR__.'/views/products', 'products');
+        $this->loadMigrationsFrom(__DIR__.'/migrations');
         /*$this->publishes([
         __DIR__.'/views' => base_path('resources/views/categories'),
         ]);
