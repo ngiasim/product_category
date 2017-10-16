@@ -21,7 +21,10 @@ class Bulk_uploads extends Model
         
             $this->fill([
                 'file_name'            => $request['file_name'],
-                'file_path'            => $request['file_path']
+                'file_path'            => $request['file_path'],
+                'rows_count'           => 0,
+                'summary'              => '',
+                'status'               => 0
             ]);
             $this->save();
             return $this->bulk_uploads_id;
