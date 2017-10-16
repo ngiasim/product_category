@@ -18,8 +18,8 @@ class ProductDescription extends Migration
             $table->increments('product_description_id',15);
             $table->integer('fk_language');
             $table->integer('fk_product');
-            $table->string('products_name', 64)->default('NULL');
-            $table->text('products_description');
+            $table->string('products_name', 64)->nullable();
+            $table->text('products_description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
