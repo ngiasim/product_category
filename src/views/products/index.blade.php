@@ -12,7 +12,7 @@
     
       <div class="x_panel">
         <div class="x_content">
-      <h1 id="page-title">All Products </h1>
+      <h1 id="page-title">All Products 12</h1>
 
 
   <div class="container">
