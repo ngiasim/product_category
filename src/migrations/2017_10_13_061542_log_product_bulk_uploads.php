@@ -16,8 +16,8 @@ class LogProductBulkUploads extends Migration
         Schema::create('log_product_bulk_uploads', function(Blueprint $table)
         {
             $table->increments('log_product_bulk_uploads_id',15);
-            $table->integer('fk_product', 15)->unsigned();
-            $table->integer('fk_bulk_uploads',11)->unsigned();
+            $table->integer('fk_product')->unsigned();
+            $table->integer('fk_bulk_uploads')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });

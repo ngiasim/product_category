@@ -18,9 +18,9 @@ class BulkUploads extends Migration
             $table->increments('bulk_uploads_id',15);
             $table->string('file_name', 50);
             $table->string('file_path', 200);
-            $table->integer('rows_count', 15)->default(0);
-            $table->text('summary',11)->default('NULL');
-            $table->integer('status',2)->unsigned()->default(0);
+            $table->integer('rows_count');
+            $table->text('summary',11);
+            $table->integer('status');
             $table->timestamps();
             $table->softDeletes();
         });
