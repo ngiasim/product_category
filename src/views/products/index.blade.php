@@ -21,53 +21,57 @@
      </div>
      <div class="row">
           <div class="col-md-12 admin-table-view">
-               <table class="table table-bordered" id="table_data">
+     
+
+
+      <table class="table table-bordered table-striped" id="product_table" >
+        <colgroup>
+          <col width="5%" >
+          <col width="40%">
+          <col width="20%" >
+          <col width="20%">
+          <col width="15%">
+        </colgroup>
         <thead>
           <tr>
             <th>ID</th>
             <th>Product Name</th>
-            <th>Keywords</th>
-            <th>Action</th>
+            <th>Price</th> 
+            <th>SKU</th> 
+            <th>Action</th> 
           </tr>
         </thead>
-        
         <tbody>
-          @foreach($products as $row)
-          <tr>
-            <td>{{$row['product_id']}}</td>
-            <td>{{$row['productsDescription']['products_name']}}</td>
-            <td>{{$row['meta_keywords']}}</td>
-            <td>
-                                   <span class="table-action-icons">
-                                        <a href="{{url('products/'.$row['product_id'].'/edit')}}">
-                                             <i class="glyphicon glyphicon-edit"></i>
-                                        </a>
-                                   </span>
-                                   <span class="table-action-icons">
-
-              {!! Form::open(['method'=>'DELETE','url' => 'products/'.$row['product_id']]) !!}
-                    <button type="submit" class="glyphicon glyphicon-trash"></button>
-              {!! Form::close() !!}
-                                   </span>
-            </td>
-          </tr>
-          @endforeach
         </tbody>
-       
       </table>
+
+
     </div>
   </div>
-{{ $products->links() }}
   </div>
+@include('common.delete');
+@endsection
+@section('script')
 
+<script type="text/javascript">
+$(document).ready(function() {
+   var oTable =  $('#product_table').DataTable({
+        processing: true,
+        serverSide: true,
+          ajax: {
+            url: '{{ URL::to('products/getproducts') }}',
+        },
+        columns: [
+            {data: 'id', name: 'id'},
+            {data: 'products_name', name: 'products_name'},
+            {data: 'price', name: 'price'},
+            {data: 'products_sku', name: 'products_sku'},
+            {data: 'action', name: 'action'},
 
-<script>
-  $(document).ready(function() {
-    $.noConflict();
-    $('#table_datasss').dataTable({
-      "pageLength": 10,
+        ]
     });
-  });
- </script>
+});
 
+
+</script>
 @endsection

@@ -14,6 +14,8 @@ use App\Map_product_category;
 use App\Bulk_uploads;
 use Carbon\Carbon;
 
+use DataTables;
+
 use App\Jobs\UploadProductsCsvJob;
 
 use DB;
@@ -33,14 +35,55 @@ class ProductController extends Controller
         return view('products::index',compact('products'));
     }
 
-    public function selectAll()
+    public function getProducts()
     {
-       $products =  Product::get();
-       $results = ["sEcho" => 1,
-            "iTotalRecords" => count($products),
-            "iTotalDisplayRecords" => count($products),
-            "aaData" => $products ];
-       echo json_encode($results);
+        //return \DataTables::of(Product::get())->make(true);
+        $data = Product::select('product_id','products_sku','base_price')->with('productsDescription')->take(5000)->get();
+        $response = $this->makeDatatable($data);    
+        return  $response;
+    }
+
+    function makeDatatable ($data)
+    {
+        
+        return \DataTables::of($data)
+        ->addColumn('id', function ($product) {
+        
+            $return = $product->product_id;
+            return $return;
+                
+        })
+        ->addColumn('products_name', function ($product) {
+        
+            $return = $product['productsDescription']['products_name'];
+            return $return;
+        
+        })
+        ->addColumn('products_sku', function ($product) {
+        
+            $return = $product->products_sku;
+            return $return;
+                
+        })
+        ->addColumn('price', function ($product) {
+        
+            $return = $product->base_price.' -AED';
+            return $return;
+                
+        })
+        ->addColumn('action', function ($product) {
+        
+            $return = '';
+        
+            $return .= '<a title="Edit" class="actionLink" href="'.route('products.edit',$product->product_id).'"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a> ';
+        
+            $return .= '<a href="javascript:void(0)" data-type="user" data-toggle="modal" data-target="#myModal" data-uri="products/destroy/"'.$product->product_id.'"  class="actionLink confirm-delete" ><i class="glyphicon glyphicon-trash"></i> </a>';
+        
+            return $return;
+                
+        }) 
+        ->rawColumns(['action']) ->make(true);
+        
     }
     
     public function create()
