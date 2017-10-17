@@ -4,15 +4,14 @@ namespace Ngiasim\Categories;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
-use App\Product;
-use App\Product_description;
-use App\Language;
-use App\Product_status;
-use App\Category;
-use App\Category_description;
-use App\Map_product_category;
+use App\Models\Product;
+use App\Models\Product_description;
+use App\Models\Language;
+use App\Models\Product_status;
+use App\Models\Category;
+use App\Models\Category_description;
+use App\Models\Map_product_category;
 use App\Bulk_uploads;
-use Carbon\Carbon;
 
 use DataTables;
 
@@ -191,78 +190,7 @@ class ProductController extends Controller
         return redirect()->back();
     }
 
-    public function uploadCSV()
-    {
-        $response = '';
-        return view('products::bulkupload',compact('response'));
-    }
-
-    public function storeCSV(Request $request){
-            
-            $response = '';
-
-            //$get_contents = file_get_contents($request->upload_csv->getPathName());
-            $file_name = time().'.'.$request->upload_csv->getClientOriginalExtension();
-            $request->upload_csv->move(public_path('files/products/'), $file_name);
-
-            $file_path = public_path('files/products/');
-            $record['file_name'] = $file_name;
-            $record['file_path'] = $file_path;
-
-            $bulk_uploads_id = Bulk_uploads::addUploadedFile($record);
-            $path = public_path('files/products/').$file_name;
-
-
-            UploadProductsCsvJob::dispatch($bulk_uploads_id,$path);
-            //exec('cd ../ && php artisan queue:work --queue=default --timeout=1800 --tries=1');
-
-            $response = $bulk_uploads_id;
-            return view('products::bulkupload',compact('response'));    
-    }
-    
-    public function uploadStatus($bulk_uploads_id){
-            
-            $response = Bulk_uploads::getUploadedFileById($bulk_uploads_id);
-            return view('products::uploadstatus',compact('response'));    
-    }
-
-    public function ajaxUploadStatus(Request $request){
-            
-        $response = Bulk_uploads::getUploadedFileById($request['bulk_uploads_id']);
-        $arr = array();
-        foreach($response as $row){
-            $arr['rows_count']          = $row['rows_count'];
-            $summary = json_decode($row['summary']);
-            $arr['products_added']      = $summary->products_added;
-            $arr['products_updated']    = $summary->products_updated;
-            $arr['categories_added']    = $summary->categories_added;
-            
-            $arr['percent'] = round((($summary->products_added+$summary->products_updated) / $row['rows_count'] ) * 100,2).' %';
-
-            if($row['status'] ==0){
-                $arr['status'] = 'Uploading has not started yet.';
-            }
-            elseif($row['status'] ==1){
-                $arr['status'] = 'Uploading started.';
-            }
-            elseif($row['status'] ==2){
-                $arr['status'] = 'Uploading Error.';
-            }
-            else{
-                $arr['status'] = 'Successfully Uploaded';
-            }
-        }
-
-        return response()->json($arr);  
-    }
-    
-    public function triggerQueue(Request $request){   
-       
-       exec('cd ../ && php artisan queue:work --tries=1');
-
-    }
-    
-
+   
     public function destroy($product_id)
     {
         Product::deleteProducts($product_id);

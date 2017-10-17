@@ -21,7 +21,7 @@ class CategoriesServiceProvider extends ServiceProvider
         ]);
 */
         $this->publishes([
-        __DIR__.'/models' => base_path('app'),
+        __DIR__.'/models' => base_path('app/Models'),
         ]);
 
          $this->publishes([

@@ -67,6 +67,20 @@ class Product_description extends Model
             $products_description->save();
         }
     }
+
+    protected function updateProductsDescriptions($request,$fk_product){
+        for($i=1;$i<=2;$i++){
+            $obj = new Product_description;
+            $obj = $obj->where(['fk_product'=>$fk_product,'fk_language'=>$i])->first();
+            $obj->fill([
+                    'fk_language'           => $i,
+                    'fk_product'            => $fk_product,
+                    'products_name'         => $request['products_name'],
+                    'products_description'  => $request['products_description']
+                ]);
+            $obj->save();
+        } 
+    }
     
     protected function getAllProductNames(){
             return $this->pluck('products_name','fk_product')->prepend('No Parent',0);

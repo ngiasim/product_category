@@ -83,6 +83,7 @@ class UploadProductsCsvJob implements ShouldQueue
                             $count_products_added++;
                         }else{
                             Product::updateProducts($product,$alreadyExists['product_id']); 
+                            Product_description::updateProductsDescriptions($product_desc,$alreadyExists['product_id']); 
                             //$response[] = array('sku'=>$product['products_sku'],'name'=>$product_desc['products_name'],'status'=>'Product Updated','color'=>'#6487d6');
                             
                             $record = array('fk_bulk_uploads'=>$this->bulk_uploads_id,'fk_product'=>$alreadyExists['product_id']);

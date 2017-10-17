@@ -4,10 +4,10 @@ use App\Http\Controllers\Controller;
 
 
 use Illuminate\Http\Request;
-use App\Category;
-use App\Category_description;
-use App\Language;
-use App\Map_product_category;
+use App\Models\Category;
+use App\Models\Category_description;
+use App\Models\Language;
+use App\Models\Map_product_category;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
