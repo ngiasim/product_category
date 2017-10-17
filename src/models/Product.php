@@ -18,6 +18,11 @@ class Product extends Model
     {
         return $this->hasOne('App\Product_description', 'fk_product', 'product_id');
     }
+	
+    public function ProductAttribute()
+    {
+       return $this->hasMany('App\ProductAttribute', 'fk_product', 'product_id');
+    }
 
     protected function rules($except_id=""){
         $arr =  array(
