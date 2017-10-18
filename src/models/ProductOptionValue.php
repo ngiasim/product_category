@@ -19,7 +19,7 @@ class ProductOptionValue extends Model
     //protected $fillable = ['fk_brand','fk_product_status','products_sku','meta_keywords','meta_description'];
 		public function productOption()
 	  {
-	       return $this->belongsTo('App\ProductOption','fk_product_option','product_option_id');
+	       return $this->belongsTo('App\Models\ProductOption','fk_product_option','product_option_id');
 	  }
 		//
 		// public function productoption()

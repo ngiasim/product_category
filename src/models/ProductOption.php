@@ -13,7 +13,7 @@ class ProductOption extends Model
 
 		public function ProductAttribute()
 		{
-				 return $this->hasMany('App\ProductAttribute','fk_product_option','product_option_id');
+				 return $this->hasMany('App\Models\ProductAttribute','fk_product_option','product_option_id');
 		}
 
     //protected $fillable = ['fk_brand','fk_product_status','products_sku','meta_keywords','meta_description'];
