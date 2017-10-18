@@ -16,7 +16,7 @@ class Category extends Model
 
     public function children()
     {
-       return $this->hasMany('App\Category', 'id_parent');
+       return $this->hasMany('App\Models\Category', 'id_parent');
     }
 
     // recursive, loads all descendants

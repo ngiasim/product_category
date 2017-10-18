@@ -16,7 +16,7 @@ class Product_description extends Model
 
     public function products()
     {
-        return $this->belongsTO('App\Product', 'fk_product', 'product_description_id');
+        return $this->belongsTO('App\Models\Product', 'fk_product', 'product_description_id');
     }
 
     protected function rules($except_product_id=""){

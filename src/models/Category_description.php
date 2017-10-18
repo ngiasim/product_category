@@ -16,7 +16,7 @@ class Category_description extends Model
 
     public function categories()
     {
-        return $this->belongsTO('App\Category', 'fk_category', 'id');
+        return $this->belongsTO('App\Models\Category', 'fk_category', 'id');
     }
 
     protected function rules($except_category_id=""){
