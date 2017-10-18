@@ -30,7 +30,7 @@ class Category extends Model
     // parent
     public function parent()
     {
-       return $this->belongsTo('App\Category','id_parent');
+       return $this->belongsTo('App\Models\Category','id_parent');
     }
 
     // all ascendants
@@ -42,7 +42,7 @@ class Category extends Model
 
     public function categoriesDescription()
     {
-        return $this->hasOne('App\Category_description', 'fk_category', 'category_id');
+        return $this->hasOne('App\Models\Category_description', 'fk_category', 'category_id');
     }
 
     protected function rules($except_id=""){
