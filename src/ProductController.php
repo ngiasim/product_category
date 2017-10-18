@@ -37,7 +37,7 @@ class ProductController extends Controller
     public function getProducts()
     {
         //return \DataTables::of(Product::get())->make(true);
-        $data = Product::select('product_id','products_sku','base_price')->with('productsDescription')->take(5000)->get();
+        $data = Product::select('product_id','products_sku','base_price')->with('productsDescription')->get();
         $response = $this->makeDatatable($data);    
         return  $response;
     }
