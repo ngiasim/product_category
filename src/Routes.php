@@ -10,7 +10,9 @@ Route::group([
 
 
 	Route::get('products/getproducts','ngiasim\categories\ProductController@getProducts');
-
+	
+		
+	Route::get('products/categorization/{id}','ngiasim\categories\ProductController@categorization');
 	Route::post('products/addTags','ngiasim\categories\ProductController@addTags');
 	Route::get('products/removeTags/{id}','ngiasim\categories\ProductController@removeTags');
 

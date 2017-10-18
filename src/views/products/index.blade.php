@@ -11,7 +11,7 @@
      </div>
      <div class="row">
           <div class="col-md-12 no-padding-right">
-               <a href="bulkupload/1" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus"></i> Upload CSV</a>
+               <a href="bulkupload" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus"></i> Upload CSV</a>
                <a href="products/create" class="btn btn-primary pull-right margin-right-10"><i class="glyphicon glyphicon-plus"></i> Add New</a>
           </div>
      </div>
