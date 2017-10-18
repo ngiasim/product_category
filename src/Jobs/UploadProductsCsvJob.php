@@ -3,12 +3,12 @@
 namespace App\Jobs;
 
 use App\Bulk_uploads;
-use App\Product;
-use App\Product_description;
-use App\Category;
-use App\Category_description;
-use App\Map_product_category;
-use App\Log_product_bulk_uploads;
+use App\Models\Product;
+use App\Models\Product_description;
+use App\Models\Category;
+use App\Models\Category_description;
+use App\Models\Map_product_category;
+use App\Models\Log_product_bulk_uploads;
 use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
