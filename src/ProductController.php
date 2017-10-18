@@ -167,6 +167,17 @@ class ProductController extends Controller
         return $cat_names;
     }
 
+
+    public function categorization($id)
+    {    
+        $categories = $this->getCategoriesTree();
+        $get_mapped_category_ids = Map_product_category::where(['fk_product'=>$id])->pluck('fk_category')->toArray();
+        $get_mapped_ids = Map_product_category::where(['fk_product'=>$id])->orderBy('fk_category','asc')->pluck('map_product_category_id')->toArray();
+        $get_mapped_categories =$this->getParentCategories($get_mapped_category_ids);
+        return view('products::categorization',compact('id','categories','get_mapped_categories','get_mapped_ids'));
+
+    }
+
     public function addTags(Request $request)
     {    
         $ids = Map_product_category::addProductCategory($request); 
