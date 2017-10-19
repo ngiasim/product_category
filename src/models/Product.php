@@ -24,6 +24,16 @@ class Product extends Model
        return $this->hasMany('App\Models\ProductAttribute', 'fk_product', 'product_id');
     }
 
+		public function inventory()
+    {
+       return $this->hasMany('App\Models\InventoryItem', 'fk_product', 'product_id');
+    }
+
+		public function mapProductInventoryItem()
+    {
+       return $this->hasMany('App\Models\MapProductInventoryItem', 'fk_product', 'product_id');
+    }
+
     protected function rules($except_id=""){
         $arr =  array(
             'meta_keywords'              => 'required|max:200' ,
