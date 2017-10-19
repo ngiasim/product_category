@@ -10,7 +10,7 @@
       <div style="clear:both"></div>
         
 
-<div class="container">
+<div class="main-center-area">
     <div class="row">
           <div class="col-md-12 admin-table-view">
                <!-- -->

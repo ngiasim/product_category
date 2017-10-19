@@ -3,7 +3,7 @@
 @section('content')
 
 
-  <div class="container">
+  <div class="main-center-area">
      <div class="row">
           <div class="page-header admin-header">
               <h3 id="page-title">All Products</h3>      
