@@ -7,7 +7,7 @@
     <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
 
-  <div class="container">
+  <div class="main-center-area">
      <div class="row">
           <div class="page-header admin-header">
               <h3 id="page-title">All Categories</h3>      

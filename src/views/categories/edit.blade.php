@@ -5,7 +5,7 @@
 <script src="{{url('js/arabic.js')}}"></script>
 <script src="https://cdn.ckeditor.com/4.7.3/basic/ckeditor.js"></script>
 
-<div class="container">
+<div class="main-center-area">
     <div class="row">
           <div class="page-header admin-header">
               <h3 id="page-title">Update Categories</h3>      
