@@ -128,6 +128,7 @@
   CKEDITOR.replaceClass = 'description';
   
   $(document).ready(function() {
+    $.noConflict();
     $(".rtl").arabisk();
   });
 
