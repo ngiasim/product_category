@@ -60,6 +60,7 @@ $(document).ready(function() {
    var oTable =  $('#product_table').DataTable({
         processing: true,
         serverSide: true,
+        pageLength: 50,
           ajax: {
             url: '{{ URL::to('products/getproducts') }}',
         },
