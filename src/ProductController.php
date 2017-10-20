@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Product_description;
-use App\Models\Language;
+use App\Language;
 use App\Models\Product_status;
 use App\Models\Category;
 use App\Models\Category_description;

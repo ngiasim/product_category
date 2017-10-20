@@ -42,6 +42,7 @@ class InventoryController extends Controller
 
     public function show($id)
     {
+       $product_id = $id;
        $inventoryObj = Product::where('product_id', '=', $id)
        ->with(array('mapProductInventoryItem' => function($query) {
               $query->with(array('inventory' => function($query2) {
@@ -53,7 +54,7 @@ class InventoryController extends Controller
         }))
        ->get();
        //dd($inventoryObj);
-       return view('inventory::index',compact('inventoryObj'));
+       return view('inventory::index',compact('inventoryObj','product_id'));
 
     }
 
@@ -71,40 +72,53 @@ class InventoryController extends Controller
     public function create()
     {
          //dd(\Session::all());
-         $id = 2;
-         $product_option = $inventoryObj = Product::where('product_id', '=', $id)
+         $obj = input::all();
+         $product_id = $obj["product_id"];
+         $product_option = $inventoryObj = Product::where('product_id', '=', $product_id)
          ->with(array('ProductAttribute' => function($query) {
                $query->with(array('productOption' => function($query2) {
                  $query2->with('productOptionValue');
               }));
            }))
            ->get();
+           $idsAttribite;
+           foreach ($product_option as $product ) {
+               foreach ($product->ProductAttribute as $pa){
+                  $idsAttribite[$product->product_id][] =  $pa->productOption->productOptionValue;
+                }
+           }
+
+           foreach ($idsAttribite as $key1 => $val1){
+             foreach ($val1 as $key2 => $val2){
+               foreach ($val2 as $key3 => $val3){
+                  $inner_ids[$key3] =  $val3->product_option_value_id;
+                }
+                $inner1_ids[$key2]=$inner_ids;
+             }
+           }
+
+           $ids_inventories = $this->combinations($inner1_ids);
+           //dd($ids_inventories);
 
            $displayAttribite;
            foreach ($product_option as $product ) {
-             foreach ($product->ProductAttribute as $pa){
-            $displayAttribite[$product->product_id][] =  $pa->productOption->productOptionValue;
+               foreach ($product->ProductAttribute as $pa){
+                  $displayAttribite[$product->product_id][] =  $pa->productOption->productOptionValue;
+                }
            }
-         }
 
-         $final;
-         foreach ($displayAttribite as $key1 => $val1){
-           foreach ($val1 as $key2 => $val2){
-             foreach ($val2 as $key3 => $val3){
-                $inner[$key3] =  $val3->display_name;
-              }
-              $inner1[$key2]=$inner;
+           foreach ($displayAttribite as $key1 => $val1){
+             foreach ($val1 as $key2 => $val2){
+               foreach ($val2 as $key3 => $val3){
+                  $inner[$key3] =  $val3->display_name;
+                }
+                $inner1[$key2]=$inner;
+             }
            }
-           //$final[$key1]=$inner1;
-         }
-        //  echo "<pr>";
-        //  print_r(
-        //      $this->combinations($inner1)
-        //  );
-        //  dd();
+
          $display_inventories = $this->combinations($inner1);
          //dd($display_inventories);
-         return view('inventory::create',compact('display_inventories'));
+         return view('inventory::create',compact('display_inventories','ids_inventories','product_id'));
      }
 
      public function combinations($arrays, $i = 0) {
@@ -131,5 +145,53 @@ class InventoryController extends Controller
 
          return $result;
      }
+
+     public function store()
+     {
+
+          $obj = input::all();
+          $attributes = "";
+          $underscore = "";
+          $ids_atrr;
+          foreach ($obj as $key => $b)
+          {
+            if (strstr($key , "atm")){
+                $attributes.= $underscore.$obj[$key];
+                $underscore = "_";
+              }
+              if (strstr($key , "atrr")){
+                  $ids_atrr[] = $obj[$key];
+                }
+          }
+
+          $productObj = Product::find($obj["product_id"]);
+
+          $invantoryObj = new InventoryItem();
+          $invantoryObj->inventory_code = $productObj->products_sku."_".$attributes;
+          $invantoryObj->qty_onhand = $obj["qty"];
+          $invantoryObj->qty_total = $obj["qty"];
+          $invantoryObj->barcode = "323232";
+          $invantoryObj->save();
+
+          //$invantoryObj->created_by = Auth::user()->user_id;
+
+          foreach ($ids_atrr as $key => $value) {
+            $invantoryItemObj = new InventoryItemDetail();
+            $invantoryItemObj->fk_inventory_item = $invantoryObj->inventory_id;
+            $invantoryItemObj->fk_product_option = "1";
+            $invantoryItemObj->fk_product_option_values = $value;
+            $invantoryItemObj->save();
+          }
+
+          $mapinvantoryObj = new MapProductInventoryItem();
+          $mapinvantoryObj->fk_product = $obj["product_id"];
+          $mapinvantoryObj->fk_inventory_item = $invantoryObj->inventory_id;
+          $mapinvantoryObj->save();
+
+
+
+
+          return redirect('/products');
+      }
 
 }

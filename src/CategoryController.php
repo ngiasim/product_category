@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Category_description;
-use App\Models\Language;
+use App\Language;
 use App\Models\Map_product_category;
 
 use Illuminate\Support\Facades\Validator;

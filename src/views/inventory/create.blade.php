@@ -16,45 +16,63 @@
                <!-- -->
             <div class="panel panel-default">
                 <div class="panel-body">
-                    {!! Form::open(['url' => 'inventory','id'=>'form_add_inventory']) !!}
 
                       <div class="form-group row">
                               {{ Form::label('Inventories: ', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
                         </div>
 
-                        <div class="form-group row">
-                          @foreach($display_inventories as $row)
+
+                          @foreach($ids_inventories as $key1 => $row1)
+                          @foreach($row1 as $col1)
+
+                             <!-- <input type="hidden" value="{{$col1}}" id="atrr-{{$key1}}" name="atrr-{{$key1}}"> -->
+
+                          @endforeach
+                          @endforeach
+
+
+
+                          @foreach($display_inventories as $key => $row)
+                          {!! Form::open(['url' => 'inventory','id'=>'form_add_inventory']) !!}
+
+                          <div class="form-group row">
                             <div class="col-xs-2 col-md-2">
-                            {{  Form::checkbox('inventory', 'value') }}
+
                             </div>
-                              @foreach($row as $col)
-                              <div class="col-xs-4 col-md-4">
-                                  {{ Form::text($col,$col, array('required','disabled',
-                                      'class'=>'form-control form-control-lg '))
-                                  }}
+                              @foreach($row as $key2 => $col)
+                              <div class="col-xs-2 col-md-2">
+                                {{ Form::text('atm-'.$loop->iteration,$col, array('required',
+                                    'id'=>'atm','class'=>'form-control form-control-lg '))
+                                }}
+                                <input type="hidden" value="{{$ids_inventories[$key][$key2]}}" id="atrr-{{$loop->iteration}}" name="atrr-{{$loop->iteration}}">
+
                               </div>
                               @endforeach
+                              <input type="hidden" value="{{$product_id}}" id="product_id" name="product_id">
+
                               <div class="col-xs-2 col-md-2">
+                                <!-- <input type="hidden" value="{{$key}}" id="" name=""> -->
                                 {{ Form::text('qty','0', array('required',
                                     'class'=>'form-control form-control-lg '))
                                 }}
                               </div>
-                          @endforeach
-                        </div>
+                              <div class="col-xs-2 col-md-2">
+                                    <!-- <button type="button" class="btn btn-success" >
+                                        Add </span>
+                                    </button> -->
+                                    {!! Form::submit('Add', ['id' => 'tool_sbmitclick', 'class' => 'btn btn-primary margin-right-10' ]) !!}
 
+                              </div>
+                              </div>
+                              {!! Form::close() !!}
+                          @endforeach
 
 
 
                         <div class="form-group row">
                               <div class="col-md-offset-2 col-md-10 text-center">
 
-                                   {!! Form::submit('Save & Close', ['id' => 'tool_sbmitclick', 'class' => 'btn btn-primary margin-right-10' ]) !!}
-
-                                   {!! Form::submit('Save & Stay', array("class"=>"btn btn-primary margin-right-10","name"=>"tool-save-stay")) !!}
-
-                                   {!! Form::submit('Save & Add New', array("class"=>"btn btn-primary margin-right-10","name"=>"tool-save-addnew")) !!}
-
-    <a href="/categories" class="btn btn-primary">Back To Listing</a>
+                                   
 
                           </div>
                         </div>
@@ -66,53 +84,56 @@
     </div>
 </div>
 
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
 <script>
 
-  CKEDITOR.replaceClass = 'description';
+  // CKEDITOR.replaceClass = 'description';
+  //
+  // $(document).ready(function() {
+  //   $.noConflict();
+  //   $(".rtl").arabisk();
+  // });
 
-  $(document).ready(function() {
-    $.noConflict();
-    $(".rtl").arabisk();
-  });
+  // $("#form_add_category").validate({
+  //     rules: {
+  //       id_parent: {
+  //         required: true,
+  //         number: true
+  //       },
+  //       category_name: {
+  //         required: true,
+  //         minlength: 2,
+  //         maxlength: 60,
+  //       },
+  //       category_link: {
+  //         required: true,
+  //         maxlength: 200
+  //       },
+  //       category_description: {
+  //         required: true,
+  //         maxlength: 2000,
+  //       },
+  //       meta_keywords: {
+  //         required: true,
+  //         maxlength: 200
+  //       },
+  //       meta_description: {
+  //         required: true,
+  //         maxlength: 2000
+  //       },
+  //       sort_order: {
+  //         required: true,
+  //         number: true
+  //       }
+  //     },
+  //     messages: {
+  //       id_parent: "Please select Parent Category",
+  //     }
+  //   });
 
-  $("#form_add_category").validate({
-      rules: {
-        id_parent: {
-          required: true,
-          number: true
-        },
-        category_name: {
-          required: true,
-          minlength: 2,
-          maxlength: 60,
-        },
-        category_link: {
-          required: true,
-          maxlength: 200
-        },
-        category_description: {
-          required: true,
-          maxlength: 2000,
-        },
-        meta_keywords: {
-          required: true,
-          maxlength: 200
-        },
-        meta_description: {
-          required: true,
-          maxlength: 2000
-        },
-        sort_order: {
-          required: true,
-          number: true
-        }
-      },
-      messages: {
-        id_parent: "Please select Parent Category",
-      }
-    });
+  function addInventory(prodId){
+    alert(prodId);
+  }
 
 
 </script>
