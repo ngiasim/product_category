@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductAttribute extends Model
 { //check
-	  use SoftDeletes;
+	use SoftDeletes;
     protected $table = 'product_attribute';
     protected $primaryKey = "product_attribute_id";
 
