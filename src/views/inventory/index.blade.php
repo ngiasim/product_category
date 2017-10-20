@@ -15,7 +15,7 @@
      </div>
     <div class='row'>
           <div class="col-md-12 no-padding-right">
-               <a href="categories/create" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus"></i> Add New</a>
+               <a href="create" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus"></i> Add New Invetory</a>
           </div>
      </div>
      <div class="row">
