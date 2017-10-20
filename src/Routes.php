@@ -13,6 +13,7 @@ Route::group([
 	Route::get('products/categorization/{id}','ngiasim\categories\ProductController@categorization');
 
 	Route::get('products/seo/{id}','ngiasim\categories\ProductController@seo');
+	Route::post('products/updateseo','ngiasim\categories\ProductController@updateSeo');
 	Route::get('products/attributes/{id}','ngiasim\categories\ProductController@attributes');
 	Route::get('products/logs/{id}','ngiasim\categories\ProductController@logs');
 

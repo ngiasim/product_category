@@ -90,7 +90,27 @@ class ProductController extends Controller
 
     public function seo($id)
     {
-        return view('products::seo',compact('id'));
+        $edit_products = Product::find($id);
+        return view('products::seo',compact('edit_products','id'));
+    }
+
+    public function updateSeo(Request $request)
+    {
+        // Validating Inputs
+        $rules = [
+            'meta_title'        => 'required|max:250',
+            'meta_keywords'     => 'required|max:250',
+            'meta_description'  => 'required|max:2000',
+        ];
+
+        $validator = Validator::make(Input::all(), $rules);
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+            return Redirect::back()->withErrors($validator)->withInput();
+        }else{
+            Product::updateProductSeo($request);
+            return back()->with('success','Product SEO updated successfully.');
+        }
     }
 
     public function attributes($id)
@@ -100,6 +120,7 @@ class ProductController extends Controller
 
     public function logs($id)
     {
+        
         return view('products::logs',compact('id'));
     }
 
