@@ -10,9 +10,11 @@ Route::group([
 
 
 	Route::get('products/getproducts','ngiasim\categories\ProductController@getProducts');
-	
-		
 	Route::get('products/categorization/{id}','ngiasim\categories\ProductController@categorization');
+
+	Route::get('products/seo/{id}','ngiasim\categories\ProductController@seo');
+	Route::get('products/attributes/{id}','ngiasim\categories\ProductController@attributes');
+	Route::get('products/logs/{id}','ngiasim\categories\ProductController@logs');
 
 	Route::get('products/images/{id}','ngiasim\categories\ProductController@uploadImages');
 	Route::post('products/storeimages','ngiasim\categories\ProductController@storeImages');

@@ -88,6 +88,21 @@ class ProductController extends Controller
 
     }
 
+    public function seo($id)
+    {
+        return view('products::seo',compact('id'));
+    }
+
+    public function attributes($id)
+    {
+        return view('products::attributes',compact('id'));
+    }
+
+    public function logs($id)
+    {
+        return view('products::logs',compact('id'));
+    }
+
     public function create()
     {
         $categories = $this->getCategoriesTree();

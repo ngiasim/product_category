@@ -6,12 +6,12 @@
     </a>
 
     <div class="link-holder">
-      <a class="btn  btn-primary btn-xs" href="{{url('products/'.$id.'/edit')}}">Products</a>
+      <a class="btn  btn-primary btn-xs" href="{{url('products/'.$id.'/edit')}}">Product Info</a>
       <a class="btn  btn-primary btn-xs" href="{{url('products/categorization/'.$id)}}">Categorization</a>
       <a class="btn  btn-primary btn-xs" href="{{url('products/images/'.$id)}}">Images</a>
    
-      <a class="btn  btn-primary btn-xs" href="/productss/seo">Seo</a>
-      <a class="btn  btn-primary btn-xs" href="/productss/attributes">Attributes</a>
-      <a class="btn  btn-primary btn-xs" href="/productss/logs">Logs</a>
+      <a class="btn  btn-primary btn-xs" href="{{url('products/seo/'.$id)}}">Seo</a>
+      <a class="btn  btn-primary btn-xs" href="{{url('products/attributes/'.$id)}}">Attributes</a>
+      <a class="btn  btn-primary btn-xs" href="{{url('products/logs/'.$id)}}">Logs</a>
     </div>
 </div>
