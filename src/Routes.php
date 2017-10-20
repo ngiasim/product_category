@@ -13,6 +13,11 @@ Route::group([
 	
 		
 	Route::get('products/categorization/{id}','ngiasim\categories\ProductController@categorization');
+
+	Route::get('products/images/{id}','ngiasim\categories\ProductController@uploadImages');
+	Route::post('products/storeimages','ngiasim\categories\ProductController@storeImages');
+	Route::get('products/removeimages/{id}','ngiasim\categories\ProductController@removeImages');
+	
 	Route::post('products/addTags','ngiasim\categories\ProductController@addTags');
 	Route::get('products/removeTags/{id}','ngiasim\categories\ProductController@removeTags');
 

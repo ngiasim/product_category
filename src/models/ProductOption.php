@@ -24,7 +24,7 @@ class ProductOption extends Model
 		//
 		public function productOptionValue()
 			{
-			 return $this->hasMany('App\Models\ProductOptionValue', 'fk_product_option','product_option_id');
+			 return $this->hasMany('App\ProductOptionValue', 'fk_product_option','product_option_id');
 			}
 
 		/*public function getOrdersByFilters($filter) {

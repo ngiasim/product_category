@@ -11,10 +11,12 @@ use App\Models\Product_status;
 use App\Models\Category;
 use App\Models\Category_description;
 use App\Models\Map_product_category;
+use App\Models\Product_image;
 use App\Bulk_uploads;
 
 use DataTables;
-
+use Image;
+use File;
 use App\Jobs\UploadProductsCsvJob;
 
 use DB;
@@ -37,7 +39,7 @@ class ProductController extends Controller
     public function getProducts()
     {
         //return \DataTables::of(Product::get())->make(true);
-        $data = Product::select('product_id','products_sku','base_price')->with('productsDescription')->take(5000)->get();
+        $data = Product::select('product_id','products_sku','base_price')->with('productsDescription');
         $response = $this->makeDatatable($data);
         return  $response;
     }
@@ -168,6 +170,99 @@ class ProductController extends Controller
         return $cat_names;
     }
 
+    public function uploadImages($id)
+    {   
+        $path = $this->getImageDirectoryByProductId($id);
+        $get_images = Product_image::where(['fk_product'=>$id])->get();
+        return view('products::uploadimage',compact('id','get_images','path'));
+    }
+
+    public function storeImages(Request $request)
+    {   
+        //dd($request->all());
+       
+        $rules = [
+            'uploaded_image.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'sort_order.*'     => 'required|integer',
+        ];
+
+        $validator = Validator::make(Input::all(), $rules);
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+            return Redirect::back()->withErrors($validator)->withInput();
+        }
+        else{
+
+            $content_path = $this->getImageDirectoryByProductId($request->product_id);
+            $path =  base_path('public/'.$content_path);
+            $count = Product_image::where(['fk_product'=>$request->product_id])->count();
+            $is_default=0;
+            if($count==0){ $is_default=1; }
+
+
+
+            foreach($request->uploaded_image as $key => $image){
+                $imageName = time().'-'.$key.'.'.$image->getClientOriginalExtension();
+                $image->move($path, $imageName);
+
+                $zoom = $path.'/zoom';
+                $img = Image::make($path.'/'.$imageName);
+                $img->resize(1000, 1000, function ($constraint) {
+                    $constraint->aspectRatio('1:1');
+                })->save($zoom.'/'.$imageName);
+
+                $item = $path.'/item';
+                $img = Image::make($path.'/'.$imageName);
+                $img->resize(680, 680, function ($constraint) {
+                    $constraint->aspectRatio('1:1');
+                })->save($item.'/'.$imageName);
+
+                $list = $path.'/list';
+                $img = Image::make($path.'/'.$imageName);
+                $img->resize(220, 220, function ($constraint) {
+                    $constraint->aspectRatio('1:1');
+                })->save($list.'/'.$imageName);
+
+                File::delete($path.'/'.$imageName);
+
+                $record = [
+                    'fk_product'=>$request->product_id,
+                    'sort_order'=>$request['sort_order'][$key],
+                    'image_path'=>$imageName,
+                    'is_default'=>$is_default
+                ];
+                Product_image::addImage($record);
+                $is_default = 0;
+
+            }
+            return back()->with('success','You have successfully upload image.');
+        }
+    }
+
+    public function getImageDirectoryByProductId($product_id)
+    {    
+        $created_at = Product::where(['product_id'=>$product_id])->pluck('created_at')->first();
+        $path =  'content/'.date('Y/m/', strtotime($created_at)).$product_id;
+        File::exists(base_path('public/'.$path)) or File::makeDirectory(base_path('public/'.$path), $mode = 0755, $recursive = true, $force = false);
+        // Directory for Zoom
+        $zoom = $path.'/zoom';
+        File::exists($zoom) or File::makeDirectory($zoom);
+
+        // Directory for item
+        $item = $path.'/item';
+        File::exists($item) or File::makeDirectory($item);
+
+        // Directory for list
+        $list = $path.'/list';
+        File::exists($list) or File::makeDirectory($list);
+        return $path;
+    }
+
+    public function removeImages($product_image_id)
+    {
+        Product_image::removeImages($product_image_id);
+        return redirect()->back();
+    }
 
     public function categorization($id)
     {    
@@ -176,7 +271,6 @@ class ProductController extends Controller
         $get_mapped_ids = Map_product_category::where(['fk_product'=>$id])->orderBy('fk_category','asc')->pluck('map_product_category_id')->toArray();
         $get_mapped_categories =$this->getParentCategories($get_mapped_category_ids);
         return view('products::categorization',compact('id','categories','get_mapped_categories','get_mapped_ids'));
-
     }
 
     public function addTags(Request $request)
