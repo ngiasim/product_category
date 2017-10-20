@@ -39,7 +39,7 @@ class ProductController extends Controller
     public function getProducts()
     {
         //return \DataTables::of(Product::get())->make(true);
-        $data = Product::select('product_id','products_sku','base_price')->with('productsDescription')->take(5000)->get();
+        $data = Product::select('product_id','products_sku','base_price')->with('productsDescription')->take(15000)->get();
         $response = $this->makeDatatable($data);
         return  $response;
     }
@@ -206,21 +206,18 @@ class ProductController extends Controller
                 $image->move($path, $imageName);
 
                 $zoom = $path.'/zoom';
-                File::exists($zoom) or File::makeDirectory($zoom);
                 $img = Image::make($path.'/'.$imageName);
                 $img->resize(1000, 1000, function ($constraint) {
                     $constraint->aspectRatio('1:1');
                 })->save($zoom.'/'.$imageName);
 
                 $item = $path.'/item';
-                File::exists($item) or File::makeDirectory($item);
                 $img = Image::make($path.'/'.$imageName);
                 $img->resize(680, 680, function ($constraint) {
                     $constraint->aspectRatio('1:1');
                 })->save($item.'/'.$imageName);
 
                 $list = $path.'/list';
-                File::exists($list) or File::makeDirectory($list);
                 $img = Image::make($path.'/'.$imageName);
                 $img->resize(220, 220, function ($constraint) {
                     $constraint->aspectRatio('1:1');
@@ -247,6 +244,17 @@ class ProductController extends Controller
         $created_at = Product::where(['product_id'=>$product_id])->pluck('created_at')->first();
         $path =  'content/'.date('Y/m/', strtotime($created_at)).$product_id;
         File::exists(base_path('public/'.$path)) or File::makeDirectory(base_path('public/'.$path), $mode = 0755, $recursive = true, $force = false);
+        // Directory for Zoom
+        $zoom = $path.'/zoom';
+        File::exists($zoom) or File::makeDirectory($zoom);
+
+        // Directory for item
+        $item = $path.'/item';
+        File::exists($item) or File::makeDirectory($item);
+
+        // Directory for list
+        $list = $path.'/list';
+        File::exists($list) or File::makeDirectory($list);
         return $path;
     }
 
