@@ -25,7 +25,8 @@ class CategoryController extends Controller
     {
        // Categories array with spaces in category_name
        $categories = $this->getCategoriesTree();
-       return view('categories::index',compact('categories'));
+       $title = "Categories";
+       return view('categories::index',compact('categories','title'));
     }
 
 
@@ -33,7 +34,8 @@ class CategoryController extends Controller
     {
         $categories = $this->getCategoriesTree();
         $languages = Language::getAllLanguages();
-        return view('categories::create',compact('languages','categories'));
+        $title = "Add Category";
+        return view('categories::create',compact('languages','categories','title'));
     }
 
     public function store(Request $request)
@@ -70,8 +72,8 @@ class CategoryController extends Controller
         // Categories array with spaces in category_name
         $categories = $this->getCategoriesTree();
         $languages = Language::getAllLanguages();
-
-        return view('categories::edit',compact('categories','languages','edit_categories','edit_categories_description','id'));
+        $title = "Edit Category";
+        return view('categories::edit',compact('categories','languages','edit_categories','edit_categories_description','id','title'));
     }
 
     public function update(Request $request, $id_categories)
