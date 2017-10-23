@@ -33,8 +33,8 @@ class ProductController extends Controller
     {
         //$products =  Product::with('productsDescription')->take(100)->get();
         $products =  Product::with('productsDescription')->simplePaginate(100);
-        $title = "Product";
-        return view('products::index',compact('products','title'));
+        $page_title = "Product";
+        return view('products::index',compact('products','page_title'));
     }
 
     public function getProducts()
@@ -92,8 +92,8 @@ class ProductController extends Controller
     public function seo($id)
     {
         $edit_products = Product::find($id);
-        $title = $id." - SEO";
-        return view('products::seo',compact('edit_products','id','title'));
+        $page_title = $id." - SEO";
+        return view('products::seo',compact('edit_products','id','page_title'));
     }
 
     public function updateSeo(Request $request)
@@ -117,14 +117,14 @@ class ProductController extends Controller
 
     public function attributes($id)
     {
-        $title = $id." - Attributes";
-        return view('products::attributes',compact('id','title'));
+        $page_title = $id." - Attributes";
+        return view('products::attributes',compact('id','page_title'));
     }
 
     public function logs($id)
     {
-        $title = $id." - Logs";
-        return view('products::logs',compact('id','title'));
+        $page_title = $id." - Logs";
+        return view('products::logs',compact('id','page_title'));
     }
 
     public function create()
@@ -132,8 +132,8 @@ class ProductController extends Controller
         $categories = $this->getCategoriesTree();
         $languages = Language::getAllLanguages();
         $statuses = Product_status::getAllStatuses();
-        $title = "Add Product";
-        return view('products::create',compact('languages','statuses','categories','title'));
+        $page_title = "Add Product";
+        return view('products::create',compact('languages','statuses','categories','page_title'));
     }
 
     public function store(Request $request)
@@ -172,8 +172,8 @@ class ProductController extends Controller
         $get_mapped_category_ids = Map_product_category::where(['fk_product'=>$id])->pluck('fk_category')->toArray();
         $get_mapped_ids = Map_product_category::where(['fk_product'=>$id])->orderBy('fk_category','asc')->pluck('map_product_category_id')->toArray();
         $get_mapped_categories =$this->getParentCategories($get_mapped_category_ids);
-        $title = $id." - Product";
-        return view('products::edit',compact('languages','statuses','edit_products','edit_products_description','id','categories','get_mapped_categories','get_mapped_ids','title'));
+        $page_title = $id." - Product";
+        return view('products::edit',compact('languages','statuses','edit_products','edit_products_description','id','categories','get_mapped_categories','get_mapped_ids','page_title'));
     }
 
     public function update(Request $request, $product_id)
@@ -215,8 +215,8 @@ class ProductController extends Controller
     {   
         $path = $this->getImageDirectoryByProductId($id);
         $get_images = Product_image::where(['fk_product'=>$id])->get();
-        $title = $id." - Image";
-        return view('products::uploadimage',compact('id','get_images','path','title'));
+        $page_title = $id." - Image";
+        return view('products::uploadimage',compact('id','get_images','path','page_title'));
     }
 
     public function storeImages(Request $request)
@@ -312,8 +312,8 @@ class ProductController extends Controller
         $get_mapped_category_ids = Map_product_category::where(['fk_product'=>$id])->pluck('fk_category')->toArray();
         $get_mapped_ids = Map_product_category::where(['fk_product'=>$id])->orderBy('fk_category','asc')->pluck('map_product_category_id')->toArray();
         $get_mapped_categories =$this->getParentCategories($get_mapped_category_ids);
-        $title = $id." - Categorization";
-        return view('products::categorization',compact('id','categories','get_mapped_categories','get_mapped_ids','title'));
+        $page_title = $id." - Categorization";
+        return view('products::categorization',compact('id','categories','get_mapped_categories','get_mapped_ids','page_title'));
     }
 
     public function addTags(Request $request)
