@@ -60,7 +60,13 @@ class CategoryController extends Controller
 
     public function show($id)
     {
-        //
+        $page_title = $id." - Category";
+        $category = Category::with(array('categoriesDescriptions' => function($query) {
+               $query->with(array('language'));
+           }))->find($id);
+        
+        //dd($category);
+        return view('categories::show',compact('category','page_title'));
     }
 
     public function edit($id)

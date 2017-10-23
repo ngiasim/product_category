@@ -45,6 +45,11 @@ class Category extends Model
         return $this->hasOne('App\Models\Category_description', 'fk_category', 'category_id');
     }
 
+    public function categoriesDescriptions()
+    {
+        return $this->hasMany('App\Models\Category_description', 'fk_category', 'category_id');
+    }
+
     protected function rules($except_id=""){
         $arr =  array(
             'id_parent'                  => 'required|integer',            

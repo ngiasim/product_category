@@ -11,13 +11,23 @@ class Category_description extends Model
 	protected $table = 'category_description';
     protected $primaryKey = "category_description_id";
 
-
     protected $fillable = ['fk_language','fk_category','category_name','category_description'];
 
     public function categories()
     {
         return $this->belongsTO('App\Models\Category', 'fk_category', 'id');
     }
+
+    // public function language()
+    // {
+    //     return $this->hasOne('App\Language', 'fk_language', 'language_id');
+    // }
+
+    public function language()
+    {
+        return $this->belongsTO('App\Language', 'fk_language', 'language_id');
+    }
+
 
     protected function rules($except_category_id=""){
         $arr =  array(                 

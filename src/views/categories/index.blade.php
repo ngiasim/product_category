@@ -34,10 +34,10 @@
 
         @foreach($categories as $row)
           <tr>
-                <td><?=$row['category_id']?></td>
-                <td><?=$row['category_name']?></td>
-                <td><?=$row['category_description']?></td>
-                <td><?=$row['products']?></td>
+                <td><a title="View Category" target="_blank" class="actionLink" href="/categories/{{$row['category_id']}}">{{$row['category_id']}}</a> </td>
+                <td>{!!$row['category_name']!!}</td>
+                <td>{!!$row['category_description']!!}</td>
+                <td>{{$row['products']}}</td>
                               <td>
                                    <span class="table-action-icons">
                                         <a href="{{url('categories/'.$row['category_id'].'/edit')}}">

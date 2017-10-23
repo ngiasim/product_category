@@ -19,6 +19,11 @@ class Product extends Model
         return $this->hasOne('App\Models\Product_description', 'fk_product', 'product_id');
     }
 
+    public function productsDescriptions()
+    {
+        return $this->hasMany('App\Models\Product_description', 'fk_product', 'product_id');
+    }
+
     public function ProductAttribute()
     {
        return $this->hasMany('App\Models\ProductAttribute', 'fk_product', 'product_id');
@@ -34,13 +39,15 @@ class Product extends Model
        return $this->hasMany('App\Models\MapProductInventoryItem', 'fk_product', 'product_id');
     }
 
-    protected function updateProductSeo($request){
-        $products = $this->find($request['product_id']);
-        $products->meta_title           = $request['meta_title'];
-        $products->meta_keywords        = $request['meta_keywords'];
-        $products->meta_description     = $request['meta_description'];
+    protected function rules($except_id=""){
+        $arr =  array(
+            'meta_keywords'              => 'required|max:200' ,
+            'meta_description'           => 'required|max:2000',
+            'fk_product_status'          => 'required|integer',
+            'products_sku'               => 'required|max:200'
+        );
 
-        $products->save();
+        return $arr;
     }
 
     protected function addProducts($request){
@@ -70,20 +77,20 @@ class Product extends Model
         $products->meta_description     = $request['meta_description'];
         $products->fk_product_status    = $request['fk_product_status'];
         $products->products_sku         = $request['products_sku'];
-        $products->base_price         = $request['base_price'];
+        $products->base_price           = $request['base_price'];
 
         $products->save();
     }
 
-    protected function updateProductSeo($request,$id){
-        $products = $this->find($id);
+    protected function updateProductSeo($request){
+        $products = $this->find($request['product_id']);
         $products->meta_title           = $request['meta_title'];
         $products->meta_keywords        = $request['meta_keywords'];
         $products->meta_description     = $request['meta_description'];
 
         $products->save();
     }
-    
+
     protected function deleteProducts($id){
         $products = $this->find($id);
         $products->delete();

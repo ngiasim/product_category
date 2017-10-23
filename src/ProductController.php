@@ -51,7 +51,8 @@ class ProductController extends Controller
         return \DataTables::of($data)
         ->addColumn('id', function ($product) {
 
-            $return = $product->product_id;
+            $return = '';
+            $return .= '<a title="View Product" target="_blank" class="actionLink" href="/products/'.$product->product_id.'">'.$product->product_id.'</a> ';
             return $return;
 
         })
@@ -85,7 +86,7 @@ class ProductController extends Controller
             return $return;
 
         })
-        ->rawColumns(['action']) ->make(true);
+        ->rawColumns(['id','action']) ->make(true);
 
     }
 
@@ -158,7 +159,13 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        //
+        $page_title = $id." - Product";
+        $product = Product::with(array('productsDescriptions' => function($query) {
+               $query->with(array('language'));
+           }))->find($id);
+       
+        //dd($product);
+        return view('products::show',compact('product','page_title'));
     }
 
 
