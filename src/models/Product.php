@@ -44,7 +44,8 @@ class Product extends Model
             'meta_keywords'              => 'required|max:200' ,
             'meta_description'           => 'required|max:2000',
             'fk_product_status'          => 'required|integer',
-            'products_sku'               => 'required|max:200'
+            'products_sku'               => 'required|max:200',
+            'base_price'                 => 'required|integer'
         );
 
         return $arr;

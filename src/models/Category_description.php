@@ -30,13 +30,10 @@ class Category_description extends Model
 
 
     protected function rules($except_category_id=""){
-        $arr =  array(                 
+        $arr =  array(        
+            'category_name.*'              => 'required|max:60',
+            'category_description.*'     => 'required|max:2000'           
         );
-
-         /*$arr =  array(        
-            'category_name'            => 'required|max:60|unique:categories_description,category_name,'.$except_category_id,
-            'categories_description'     => 'required|max:2000'           
-        );*/
 
        /* if($except_category_id!=""){ 
             $arr['category_name'] = 'required|max:60|unique:categories_description,category_name,'.$except_category_id; 

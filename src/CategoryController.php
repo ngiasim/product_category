@@ -40,9 +40,14 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        
         // Validating Inputs
-        $validator = Validator::make(Input::all(),array_merge(Category::rules(),Category_description::rules()));
+        $messages = [
+            'category_name.*.required' => 'The Category Name field is required.',
+            'category_description.*.required' => 'The Category Description field is required.',
+            'category_name.*.max' => 'The Category Name may not be greater than 60 characters.',
+            'category_description.*.max' => 'The Category Description may not be greater than 2000 characters.',
+        ];
+        $validator = Validator::make(Input::all(),array_merge(Category::rules(),Category_description::rules()),$messages);
 
         // If Validation Fails
         if ($validator->fails()) {
@@ -85,7 +90,13 @@ class CategoryController extends Controller
     public function update(Request $request, $id_categories)
     {
         // Validating Inputs
-        $validator = Validator::make(Input::all(),array_merge(Category::rules($id_categories),Category_description::rules($id_categories)));
+        $messages = [
+            'category_name.*.required' => 'The Category Name field is required.',
+            'category_description.*.required' => 'The Category Description field is required.',
+            'category_name.*.max' => 'The Category Name may not be greater than 60 characters.',
+            'category_description.*.max' => 'The Category Description may not be greater than 2000 characters.',
+        ];
+        $validator = Validator::make(Input::all(),array_merge(Category::rules($id_categories),Category_description::rules($id_categories)),$messages);
 
         if ($validator->fails()) {
             $messages = $validator->messages();

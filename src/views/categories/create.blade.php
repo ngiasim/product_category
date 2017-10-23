@@ -25,6 +25,8 @@
                               {{ Form::text('category_name['.$row["language_id"].']',null, array('required', 
                                   'class'=>'form-control form-control-lg '.$row['direction'],'placeholder'=>$row['name'] )) 
                               }}
+                              @if ($errors->has('category_name.'.$row["language_id"])) <p class="help-block error">{{ $errors->first('category_name.'.$row["language_id"]) }}</p> @endif
+                        
                           </div>
                         @endforeach
                         </div>
@@ -35,6 +37,8 @@
                         @foreach($languages as $row)
                               <div class="col-xs-12 col-md-5">
                               {{ Form::textarea('category_description['.$row["language_id"].']', null, ['class' => 'description '.$row['direction'] ]) }} 
+                              @if ($errors->has('category_description.'.$row["language_id"])) <p class="help-block error">{{ $errors->first('category_description.'.$row["language_id"]) }}</p> @endif
+                        
                           </div>
                         @endforeach
                         </div>

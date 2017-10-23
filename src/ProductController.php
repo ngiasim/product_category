@@ -140,7 +140,14 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         // Validating Inputs
-        $validator = Validator::make(Input::all(),array_merge(Product::rules(),Product_description::rules()));
+        $messages = [
+            'products_name.*.required' => 'The Products Name field is required.',
+            'products_description.*.required' => 'The Products Description field is required.',
+            'products_name.*.max' => 'The Products Name may not be greater than 60 characters.',
+            'products_description.*.max' => 'The Products Description may not be greater than 2000 characters.',
+        ];
+
+        $validator = Validator::make(Input::all(),array_merge(Product::rules(),Product_description::rules()),$messages);
 
         // If Validation Fails
         if ($validator->fails()) {
@@ -186,7 +193,13 @@ class ProductController extends Controller
     public function update(Request $request, $product_id)
     {
         // Validating Inputs
-        $validator = Validator::make(Input::all(),array_merge(Product::rules($product_id),Product_description::rules($product_id)));
+        $messages = [
+            'products_name.*.required' => 'The Products Name field is required.',
+            'products_description.*.required' => 'The Products Description field is required.',
+            'products_name.*.max' => 'The Products Name may not be greater than 60 characters.',
+            'products_description.*.max' => 'The Products Description may not be greater than 2000 characters.',
+        ];
+        $validator = Validator::make(Input::all(),array_merge(Product::rules($product_id),Product_description::rules($product_id)),$messages);
 
         if ($validator->fails()) {
             $messages = $validator->messages();
