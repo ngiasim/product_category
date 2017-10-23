@@ -126,7 +126,7 @@ class CategoryController extends Controller
 
             $this->globalRecursive[$this->globalIteration]['category_id'] = $row['category_id'];
             $this->globalRecursive[$this->globalIteration]['category_name'] = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',$indent).$span.' '.$row['categories_description']['category_name'];
-            $this->globalRecursive[$this->globalIteration]['category_description'] = $row['categories_description']['category_description'];
+            $this->globalRecursive[$this->globalIteration]['sort_order'] = $row['sort_order'];
             $this->globalRecursive[$this->globalIteration]['products'] = Map_product_category::where(['fk_category' => $row['category_id']])->count();
             
             $this->globalIteration++;
