@@ -8,6 +8,12 @@ Route::group([
 		'middleware' => ['auth']
 	], function () {
 
+  //Route::resource('products/inventory','ngiasim\categories\InventoryController');
+  Route::get('products/inventory/create','ngiasim\categories\InventoryController@create');
+  Route::get('products/inventory/{id}','ngiasim\categories\InventoryController@show');
+  Route::post('products/inventory','ngiasim\categories\InventoryController@store');
+  Route::delete('products/inventory/delete/{id}','ngiasim\categories\InventoryController@destroy');
+
 
 	Route::get('products/getproducts','ngiasim\categories\ProductController@getProducts');
 	Route::get('products/categorization/{id}','ngiasim\categories\ProductController@categorization');
@@ -20,14 +26,14 @@ Route::group([
 	Route::get('products/images/{id}','ngiasim\categories\ProductController@uploadImages');
 	Route::post('products/storeimages','ngiasim\categories\ProductController@storeImages');
 	Route::get('products/removeimages/{id}','ngiasim\categories\ProductController@removeImages');
-	
+
 	Route::post('products/addTags','ngiasim\categories\ProductController@addTags');
 	Route::get('products/removeTags/{id}','ngiasim\categories\ProductController@removeTags');
 
 
         Route::resource('categories','ngiasim\categories\CategoryController');
         Route::resource('products','ngiasim\categories\ProductController');
-        Route::resource('inventory','ngiasim\categories\InventoryController');
+
 
 	});
     });

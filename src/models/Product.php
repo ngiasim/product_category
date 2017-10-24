@@ -18,26 +18,25 @@ class Product extends Model
     {
         return $this->hasOne('App\Models\Product_description', 'fk_product', 'product_id');
     }
-
     public function productsDescriptions()
     {
         return $this->hasMany('App\Models\Product_description', 'fk_product', 'product_id');
     }
-
     public function ProductAttribute()
     {
        return $this->hasMany('App\Models\ProductAttribute', 'fk_product', 'product_id');
     }
 
-		public function inventory()
+	public function inventory()
     {
        return $this->hasMany('App\Models\InventoryItem', 'fk_product', 'product_id');
     }
 
-		public function mapProductInventoryItem()
+	public function mapProductInventoryItem()
     {
        return $this->hasMany('App\Models\MapProductInventoryItem', 'fk_product', 'product_id');
     }
+
 
     protected function addProducts($request){
     	
@@ -74,20 +73,27 @@ class Product extends Model
 
         $products->save();
     }
-
     protected function updateProductSeo($request){
         $products = $this->find($request['product_id']);
         $products->meta_title           = $request['meta_title'];
         $products->meta_keywords        = $request['meta_keywords'];
         $products->meta_description     = $request['meta_description'];
-
         $products->save();
     }
-
     protected function deleteProducts($id){
         $products = $this->find($id);
         $products->delete();
     }
 
-
+	public function getProductOptionByProductId($product_id)
+	{
+			$product_option = Product::where('product_id', '=', $product_id)
+			->with(array('ProductAttribute' => function($query) {
+						$query->with(array('productOption' => function($query2) {
+							$query2->with('productOptionValue');
+					 }));
+				}))
+				->get();
+				return $product_option;
+	}
 }

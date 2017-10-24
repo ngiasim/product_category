@@ -1,16 +1,6 @@
 <!-- create.blade.php -->
 
-@extends('layouts.cockpit_master')
-@section('content')
-<script src="{{url('js/arabic.js')}}"></script>
-<script src="https://cdn.ckeditor.com/4.7.3/basic/ckeditor.js"></script>
-
 <div class="container">
-    <div class="row">
-          <div class="page-header admin-header">
-              <h3 id="page-title">Add Inventory</h3>
-          </div>
-     </div>
      <div class="row">
           <div class="col-md-12 admin-table-view">
                <!-- -->
@@ -21,19 +11,28 @@
                               {{ Form::label('Inventories: ', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
                         </div>
 
+                          <div class="form-group row">
+                            <div class="col-xs-2 col-md-2">
 
-                          @foreach($ids_inventories as $key1 => $row1)
-                          @foreach($row1 as $col1)
-
-                             <!-- <input type="hidden" value="{{$col1}}" id="atrr-{{$key1}}" name="atrr-{{$key1}}"> -->
+                            </div>
+                          @foreach($option_names as $opname)
+                            <div class="col-xs-2 col-md-2">
+                             {{$opname}}
+                            </div>
 
                           @endforeach
-                          @endforeach
+                          <div class="col-xs-2 col-md-2">
+                              Quantity
+                          </div>
+                          <div class="col-xs-2 col-md-2">
+                              Action
+                          </div>
+                        </div>
 
 
 
                           @foreach($display_inventories as $key => $row)
-                          {!! Form::open(['url' => 'inventory','id'=>'form_add_inventory']) !!}
+                          {!! Form::open(['url' => 'products/inventory','id'=>'form_add_inventory']) !!}
 
                           <div class="form-group row">
                             <div class="col-xs-2 col-md-2">
@@ -52,8 +51,8 @@
 
                               <div class="col-xs-2 col-md-2">
                                 <!-- <input type="hidden" value="{{$key}}" id="" name=""> -->
-                                {{ Form::text('qty','0', array('required',
-                                    'class'=>'form-control form-control-lg '))
+                                {{ Form::number('qty','0', array('required',
+                                    'class'=>'form-control form-control-lg ','min'=>"1"))
                                 }}
                               </div>
                               <div class="col-xs-2 col-md-2">
@@ -72,7 +71,7 @@
                         <div class="form-group row">
                               <div class="col-md-offset-2 col-md-10 text-center">
 
-                                   
+
 
                           </div>
                         </div>
@@ -86,6 +85,28 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
 <script>
+
+function addInventory(){
+
+ $.ajax({
+       url: "/products/inventory/create?product_id="+id,
+       dataType: 'JSON',
+       type:'GET',
+       data:{"_token": "{{ csrf_token() }}"},
+       success: function (res) {
+         if (res.success)
+         {
+           console.log(res.inventoryAddView);
+           $("#add-new-inv").html(res.inventoryAddView);
+           $("#open-add-inv-section").html("<i class='glyphicon glyphicon-minus'></i> Close");
+           $("#open-add-inv-section").attr("onclick","closeInventoryView('"+id+"');");
+
+
+         }
+       //location.href = "/phoneorder";
+       }
+     });
+}
 
   // CKEDITOR.replaceClass = 'description';
   //
@@ -131,11 +152,7 @@
   //     }
   //   });
 
-  function addInventory(prodId){
-    alert(prodId);
-  }
-
-
+  // function addInventory(prodId){
+  //   alert(prodId);
+  // }
 </script>
-
-@endsection

@@ -77,7 +77,7 @@ class ProductController extends Controller
         ->addColumn('action', function ($product) {
 
             $return = '';
-            $return .= '<a title="Show Inventories" class="actionLink" href="/inventory/'.$product->product_id.'"><i class="fa fa-sitemap" aria-hidden="true"></i></a> ';
+            //$return .= '<a title="Show Inventories" class="actionLink" href="/inventory/'.$product->product_id.'"><i class="fa fa-sitemap" aria-hidden="true"></i></a> ';
 
             $return .= '<a title="Edit" class="actionLink" href="'.route('products.edit',$product->product_id).'"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a> ';
 
@@ -93,8 +93,10 @@ class ProductController extends Controller
     public function seo($id)
     {
         $edit_products = Product::find($id);
+
         $page_title = $id." - SEO";
         return view('products::seo',compact('edit_products','id','page_title'));
+
     }
 
     public function updateSeo(Request $request)
@@ -124,6 +126,7 @@ class ProductController extends Controller
 
     public function logs($id)
     {
+
         $page_title = $id." - Logs";
         return view('products::logs',compact('id','page_title'));
     }
@@ -266,7 +269,7 @@ class ProductController extends Controller
         $product = Product::with(array('productsDescriptions' => function($query) {
                $query->with(array('language'));
            }))->find($id);
-       
+
         //dd($product);
         return view('products::show',compact('product','page_title'));
     }
@@ -358,7 +361,7 @@ class ProductController extends Controller
     }
 
     public function uploadImages($id)
-    {   
+    {
         $path = $this->getImageDirectoryByProductId($id);
         $get_images = Product_image::where(['fk_product'=>$id])->get();
         $page_title = $id." - Image";
@@ -366,9 +369,9 @@ class ProductController extends Controller
     }
 
     public function storeImages(Request $request)
-    {   
+    {
         //dd($request->all());
-       
+
         $rules = [
             'uploaded_image.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'sort_order.*'     => 'required|integer',
@@ -428,7 +431,7 @@ class ProductController extends Controller
     }
 
     public function getImageDirectoryByProductId($product_id)
-    {    
+    {
         $created_at = Product::where(['product_id'=>$product_id])->pluck('created_at')->first();
         $path =  'content/'.date('Y/m/', strtotime($created_at)).$product_id;
         File::exists(base_path('public/'.$path)) or File::makeDirectory(base_path('public/'.$path), $mode = 0755, $recursive = true, $force = false);
@@ -453,7 +456,7 @@ class ProductController extends Controller
     }
 
     public function categorization($id)
-    {    
+    {
         $categories = $this->getCategoriesTree();
         $get_mapped_category_ids = Map_product_category::where(['fk_product'=>$id])->pluck('fk_category')->toArray();
         $get_mapped_ids = Map_product_category::where(['fk_product'=>$id])->orderBy('fk_category','asc')->pluck('map_product_category_id')->toArray();
