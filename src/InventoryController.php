@@ -54,26 +54,56 @@ class InventoryController extends Controller
         }))
        ->get();
        //dd($inventoryObj);
-       return view('inventory::index',compact('inventoryObj','product_id'));
+       $id = $product_id;
+       return view('inventory::index',compact('inventoryObj','product_id','id'));
 
     }
 
     public function destroy($id)
     {
         $obj = input::all();
+
         $product_id = $obj["product_id"];
         // Soft Deleting from database
+        //InventoryItem::deleteInventory($id);
+        //InventoryItemDetail::deleteInventoryItemDetail($id);
+        //MapProductInventoryItem::deleteMapping($product_id,$id);
+        //return redirect('/inventory');
+        $variable = InventoryItemDetail::where("fk_inventory_item","=",$id)->get();
+        foreach ($variable as $key => $value) {
+          InventoryItemDetail::deleteInventoryItemDetail($value->inventory_item_detail_id);
+        }
         InventoryItem::deleteInventory($id);
-        InventoryItemDetail::deleteInventoryItemDetail($id);
         MapProductInventoryItem::deleteMapping($product_id,$id);
-        return redirect('/inventory');
+        return redirect('/products/inventory/'.$obj["product_id"]);
     }
 
     public function create()
     {
          //dd(\Session::all());
+
+
+
          $obj = input::all();
          $product_id = $obj["product_id"];
+
+         $selected = InventoryItemDetail::join('map_product_inventory_item', 'inventory_item_detail.fk_inventory_item', '=', 'map_product_inventory_item.fk_inventory_item')
+             ->where('map_product_inventory_item.fk_product','=', $product_id)
+             ->select('inventory_item_detail.fk_inventory_item', 'inventory_item_detail.fk_product_option_values')
+             ->get();
+
+         $selected_attr = [];
+       ////***************** Generate Sytem Existing atrribute array **********///
+         foreach ($selected as $sel ) {
+              //echo $sel->fk_inventory_item."::".$sel->fk_product_option_values."<br>";
+              $selected_attr[$sel->fk_inventory_item][]=$sel->fk_product_option_values;
+         }
+
+         //dd($selected_attr);
+         ////***************** End **********///
+
+
+
          $product_option = $inventoryObj = Product::where('product_id', '=', $product_id)
          ->with(array('ProductAttribute' => function($query) {
                $query->with(array('productOption' => function($query2) {
@@ -81,6 +111,31 @@ class InventoryController extends Controller
               }));
            }))
            ->get();
+
+           ////***************** 0ST :: Generate Ids atrribute array **********///
+                $idsAttribited;
+                foreach ($product_option as $product ) {
+                    foreach ($product->ProductAttribute as $pa){
+                       $idsAttribited[$product->product_id][] =  $pa->productOption->productOptionValue;
+                     }
+                }
+
+
+                foreach ($idsAttribited as $key1 => $val1){
+                  foreach ($val1 as $key2 => $val2){
+                    foreach ($val2 as $key3 => $val3){
+                       $inner_ids_one[$key3] =  $val3->product_option_value_id."_".$val3->fk_product_option;
+                     }
+                     $inner0_ids[$key2]=$inner_ids_one;
+                  }
+                }
+
+                $ids_inventories_one = $this->combinations($inner0_ids);
+              //  dd($ids_inventories_one);
+             ////***************** End**********///
+
+
+      ////***************** 1ST :: Generate Ids atrribute array **********///
            $idsAttribite;
            foreach ($product_option as $product ) {
                foreach ($product->ProductAttribute as $pa){
@@ -99,26 +154,55 @@ class InventoryController extends Controller
 
            $ids_inventories = $this->combinations($inner1_ids);
            //dd($ids_inventories);
+          ////***************** End **********///
 
+          ////***************** 2ND:: Generate Display atrribute array **********///
            $displayAttribite;
            foreach ($product_option as $product ) {
                foreach ($product->ProductAttribute as $pa){
                   $displayAttribite[$product->product_id][] =  $pa->productOption->productOptionValue;
                 }
            }
-
+          //dd($displayAttribite);
            foreach ($displayAttribite as $key1 => $val1){
              foreach ($val1 as $key2 => $val2){
                foreach ($val2 as $key3 => $val3){
                   $inner[$key3] =  $val3->display_name;
                 }
                 $inner1[$key2]=$inner;
+                unset($inner);
              }
            }
 
+//dd($inner1);
+
          $display_inventories = $this->combinations($inner1);
-         //dd($display_inventories);
-         return view('inventory::create',compact('display_inventories','ids_inventories','product_id'));
+          ////***************** End **********///
+
+
+         /**************** Compile Two Arrays With Identicat restriction**********/
+         foreach ($ids_inventories as $key => $value) {
+              foreach ($selected_attr as $keyatrr => $valueatrr) {
+                if($value === array_intersect($value, $valueatrr) && $valueatrr === array_intersect($valueatrr, $value)) {
+                  //  echo $key.'Equal<br>';
+                    unset($display_inventories[$key]);
+                  } else {
+                    //echo $key.'Not equal<br>';
+                  }
+              }
+         }
+         /*********************End*************************/
+
+
+
+         $id = $product_id;
+         $ids_inventories = $ids_inventories_one;
+         $inventoryAddView = \View::make('inventory::create', compact('display_inventories','ids_inventories','product_id','id'))->render();
+        // dd($inventoryAddView);
+         $data = array(
+             "inventoryAddView" => $inventoryAddView
+         );
+         return $this->generateSuccessResponse($data);
      }
 
      public function combinations($arrays, $i = 0) {
@@ -177,9 +261,10 @@ class InventoryController extends Controller
 
           foreach ($ids_atrr as $key => $value) {
             $invantoryItemObj = new InventoryItemDetail();
+            $sep = explode("_",$value);
             $invantoryItemObj->fk_inventory_item = $invantoryObj->inventory_id;
-            $invantoryItemObj->fk_product_option = "1";
-            $invantoryItemObj->fk_product_option_values = $value;
+            $invantoryItemObj->fk_product_option = $sep[1];
+            $invantoryItemObj->fk_product_option_values = $sep[0];
             $invantoryItemObj->save();
           }
 
@@ -191,7 +276,7 @@ class InventoryController extends Controller
 
 
 
-          return redirect('/products');
+          return redirect('/products/inventory/'.$obj["product_id"]);
       }
 
 }
