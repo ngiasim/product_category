@@ -26,7 +26,7 @@
                 <td>{{$row->inventory->qty_preorder}}</td>
                 <td>{{$row->inventory->qty_total}}</td>
                 <td>{{$row->inventory->qty_admin_reserved}}</td>
-                <td>{{($row->inventory->qty_onhand-$row->qty_reserved-$row->qty_admin_reserved)+$row->qty_preorder}}</td>
+                <td>{{($row->inventory->qty_onhand-$row->inventory->qty_reserved-$row->inventory->qty_admin_reserved)+$row->inventory->qty_preorder}}</td>
                 <td>{{\Carbon\Carbon::parse($row->inventory->created_at)->toDayDateTimeString() }}</td>
                 <td>
                      <!-- <span class="table-action-icons">

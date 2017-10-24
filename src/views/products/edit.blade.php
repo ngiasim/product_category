@@ -20,6 +20,20 @@
           <div class="col-md-12 admin-table-view">
             <div class="panel panel-default">
                 <div class="panel-body">
+
+                @if(session()->has('success'))
+                  <div class="alert alert-success">
+                      <strong>Success - </strong> {{ session()->get('success') }}
+                  </div>
+                @endif
+
+                @if(session()->has('error'))
+                  <div class="alert alert-danger">
+                      <strong>Alert - </strong> {{ session()->get('error') }}
+                  </div>
+                @endif
+
+
                     {!! Form::open(['method'=>'patch','url' => "products/$id",'id'=>'form_update_product']) !!}
                       
                         <div class="form-group row">

@@ -62,6 +62,12 @@ class ProductController extends Controller
             return $return;
 
         })
+        ->addColumn('quantity', function ($product) {
+
+            $total = $this->getInventoryCountByProductId($product->product_id);
+            return $total;
+
+        })
         ->addColumn('products_sku', function ($product) {
 
             $return = $product->products_sku;
@@ -167,12 +173,12 @@ class ProductController extends Controller
         }
 
         if($selected_status_code == 'pu'){
-            return Redirect::to('products/create')->with('error','No inventry found for this product.')->withInput();
+            return Redirect::to('products/create')->with('error','Product can not be published, No inventry found for this product.')->withInput();
             
         }
 
         if($selected_status_code == 'ou'){
-            return Redirect::to('products/create')->with('error','Product status Out of Stock can not be selected at this point.')->withInput();
+            return Redirect::to('products/create')->with('error','Can not set Product status to "Out of Stock" at this point.')->withInput();
         }
 
         $validator = Validator::make(
@@ -231,7 +237,7 @@ class ProductController extends Controller
         return array_merge($product_rules,$product_description_rules);
     }
 
-    public function changeStatusToPublish()
+    public function changeStatusToPublish($product_id)
     {
         $product_rules =  array(
             'fk_product_status'          => 'required|integer',
@@ -244,10 +250,24 @@ class ProductController extends Controller
             'products_description.*'     => 'required|max:2000'           
         );
 
-        return array_merge($product_rules,$product_description_rules);
+        $total = $this->getInventoryCountByProductId($product_id);
+        if($total>0){
+            return array(
+                'rules'=>array_merge($product_rules,$product_description_rules),
+                'status'=>'success',
+                'message'=>'This product have positive inventory.'
+            );
+        }else{
+            return array(
+                'rules'=>array_merge($product_rules,$product_description_rules),
+                'status'=>'failure',
+                'message'=>'Product can not be published, No inventry found for this product.'
+            );
+
+        }
     }
 
-    public function changeStatusToOutOfStock()
+    public function changeStatusToOutOfStock($product_id)
     {
         $product_rules =  array(
             'fk_product_status'          => 'required|integer',
@@ -260,7 +280,37 @@ class ProductController extends Controller
             'products_description.*'     => 'required|max:2000'           
         );
 
-        return array_merge($product_rules,$product_description_rules);
+        $total = $this->getInventoryCountByProductId($product_id);
+        if($total>0){
+            return array(
+                'rules'=>array_merge($product_rules,$product_description_rules),
+                'status'=>'failure',
+                'message'=>'Positive inventory found, can not change product status to "Out Of Stock"'
+            );
+        }else{
+            return array(
+                'rules'=>array_merge($product_rules,$product_description_rules),
+                'status'=>'success',
+                'message'=>'No inventry found for this product.'
+            );
+
+        }
+    }
+
+    public function getInventoryCountByProductId($product_id){
+        $inventoryObj = Product::where('product_id', '=', $product_id)
+       ->with(array('mapProductInventoryItem' => function($query) {
+              $query->with(array('inventory'));
+             }))
+       ->get()->toArray();
+       
+       $total = 0;
+       foreach($inventoryObj[0]['map_product_inventory_item'] as $key => $row){
+            
+           $total+=($row['inventory']['qty_onhand']-$row['inventory']['qty_reserved']-$row['inventory']['qty_admin_reserved'])+$row['inventory']['qty_preorder'];
+
+        }
+       return $total;
     }
 
     public function show($id)
@@ -277,6 +327,7 @@ class ProductController extends Controller
 
     public function edit($id)
     {
+        
         $edit_products = Product::find($id);
         $edit_products_description = Product_description::where(['fk_product'=>$id])->get();
         $languages = Language::getAllLanguages();
@@ -315,12 +366,20 @@ class ProductController extends Controller
         }
 
         if($selected_status_code == 'pu'){
-            $rules = $this->changeStatusToPublish();
+            $response = $this->changeStatusToPublish($product_id);
+            if($response['status'] == 'failure'){
+                return Redirect::back()->with('error',$response['message'])->withInput();
+            }
+            $rules = $response['rules'];
             
         }
 
         if($selected_status_code == 'ou'){
-            $rules = $this->changeStatusToOutOfStock();
+            $response = $this->changeStatusToOutOfStock($product_id);
+            if($response['status'] == 'failure'){
+                return Redirect::back()->with('error',$response['message'])->withInput();
+            }
+            $rules = $response['rules'];
         }
 
         $validator = Validator::make(
