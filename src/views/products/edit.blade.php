@@ -98,6 +98,26 @@
                               @if ($errors->has('base_price')) <p class="help-block error">{{ $errors->first('base_price') }}</p> @endif
                           </div>
                         </div>
+
+
+                        <div class="form-group row">
+                         {{ Form::label('Is Virtual:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                         <div class="col-xs-6 col-md-1">
+                       
+                              {{ Form::checkbox('is_virtual', 1,($edit_products->is_virtual==1?true:null), ['class' => 'form-control']) }}
+
+                          </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                         {{ Form::label('Is Unlimited:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                         <div class="col-xs-6 col-md-1">
+                       
+                              {{ Form::checkbox('is_unlimited', 1,($edit_products->is_unlimited==1?true:null), ['class' => 'form-control']) }}
+
+                          </div>
+                        </div>
                         
 
                         <div class="form-group row">
