@@ -15,11 +15,11 @@
             <div class="panel panel-default">
                 <div class="panel-body">
 
-                @if(session()->has('success'))
+          @if(session()->has('success'))
 				    <div class="alert alert-success">
 				        {{ session()->get('success') }}
 				    </div>
-				@endif
+				  @endif
 
 
                     {!! Form::open(['method'=>'post','url' => "products/updateseo",'id'=>'form_update_product']) !!}

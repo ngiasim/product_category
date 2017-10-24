@@ -138,7 +138,7 @@ class ProductController extends Controller
     }
 
     public function store(Request $request)
-    {
+    { 
         // Validating Inputs
         $messages = [
             'products_name.*.required' => 'The Products Name field is required.',
@@ -147,7 +147,36 @@ class ProductController extends Controller
             'products_description.*.max' => 'The Products Description may not be greater than 2000 characters.',
         ];
 
-        $validator = Validator::make(Input::all(),array_merge(Product::rules(),Product_description::rules()),$messages);
+
+        // Status Change Code Starts here
+        $selected_status_code = 'dr';
+        $selected_status = Product_status::select('status_code')->where('product_status_id',$request['fk_product_status'])->first();
+        if(!empty($selected_status)){
+            $selected_status_code = $selected_status->status_code;
+        }
+        
+        if($selected_status_code == 'dr'){
+            $rules = $this->changeStatusToDraft();
+        }
+
+        if($selected_status_code == 're'){
+            $rules = $this->changeStatusToReview();
+        }
+
+        if($selected_status_code == 'pu'){
+            return Redirect::to('products/create')->with('error','No inventry found for this product.')->withInput();
+            
+        }
+
+        if($selected_status_code == 'ou'){
+            return Redirect::to('products/create')->with('error','Product status Out of Stock can not be selected at this point.')->withInput();
+        }
+
+        $validator = Validator::make(
+            Input::all(),
+            $rules,
+            $messages
+        );
 
         // If Validation Fails
         if ($validator->fails()) {
@@ -162,6 +191,73 @@ class ProductController extends Controller
 
             return redirect('/products');
         }
+    }
+
+    
+
+    public function changeStatusToDraft()
+    {
+        $product_rules =  array(
+            'fk_product_status'          => 'integer',
+            'products_sku'               => 'max:200',
+            'base_price'                 => 'nullable|regex:/^\d*(\.\d{1,2})?$/'
+        );
+
+        $product_description_rules =  array(        
+            'products_name.1'            => 'required|max:60',
+            'products_name.*'            => 'max:60',
+            'products_description.*'     => 'max:2000'           
+        );
+
+        return array_merge($product_rules,$product_description_rules);
+    }
+
+    public function changeStatusToReview()
+    {
+        $product_rules =  array(
+            'fk_product_status'          => 'required|integer',
+            'products_sku'               => 'required|max:200',
+            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/'
+        );
+
+        $product_description_rules =  array(        
+            'products_name.*'            => 'required|max:60',
+            'products_description.*'     => 'required|max:2000'           
+        );
+
+        return array_merge($product_rules,$product_description_rules);
+    }
+
+    public function changeStatusToPublish()
+    {
+        $product_rules =  array(
+            'fk_product_status'          => 'required|integer',
+            'products_sku'               => 'required|max:200',
+            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/'
+        );
+
+        $product_description_rules =  array(        
+            'products_name.*'            => 'required|max:60',
+            'products_description.*'     => 'required|max:2000'           
+        );
+
+        return array_merge($product_rules,$product_description_rules);
+    }
+
+    public function changeStatusToOutOfStock()
+    {
+        $product_rules =  array(
+            'fk_product_status'          => 'required|integer',
+            'products_sku'               => 'required|max:200',
+            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/'
+        );
+
+        $product_description_rules =  array(        
+            'products_name.*'            => 'required|max:60',
+            'products_description.*'     => 'required|max:2000'           
+        );
+
+        return array_merge($product_rules,$product_description_rules);
     }
 
     public function show($id)
@@ -199,7 +295,37 @@ class ProductController extends Controller
             'products_name.*.max' => 'The Products Name may not be greater than 60 characters.',
             'products_description.*.max' => 'The Products Description may not be greater than 2000 characters.',
         ];
-        $validator = Validator::make(Input::all(),array_merge(Product::rules($product_id),Product_description::rules($product_id)),$messages);
+
+        // Status Change Code Starts here
+        $selected_status_code = 'dr';
+        $selected_status = Product_status::select('status_code')->where('product_status_id',$request['fk_product_status'])->first();
+        if(!empty($selected_status)){
+            $selected_status_code = $selected_status->status_code;
+        }
+
+        if($selected_status_code == 'dr'){
+            $rules = $this->changeStatusToDraft();
+        }
+
+        if($selected_status_code == 're'){
+            $rules = $this->changeStatusToReview();
+        }
+
+        if($selected_status_code == 'pu'){
+            $rules = $this->changeStatusToPublish();
+            
+        }
+
+        if($selected_status_code == 'ou'){
+            $rules = $this->changeStatusToOutOfStock();
+        }
+
+        $validator = Validator::make(
+            Input::all(),
+            $rules,
+            $messages
+        );
+        // Status Change Code Ends here
 
         if ($validator->fails()) {
             $messages = $validator->messages();
