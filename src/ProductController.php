@@ -77,7 +77,7 @@ class ProductController extends Controller
         ->addColumn('action', function ($product) {
 
             $return = '';
-            $return .= '<a title="Show Inventories" class="actionLink" href="/inventory/'.$product->product_id.'"><i class="fa fa-sitemap" aria-hidden="true"></i></a> ';
+            //$return .= '<a title="Show Inventories" class="actionLink" href="/inventory/'.$product->product_id.'"><i class="fa fa-sitemap" aria-hidden="true"></i></a> ';
 
             $return .= '<a title="Edit" class="actionLink" href="'.route('products.edit',$product->product_id).'"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a> ';
 

@@ -88,4 +88,16 @@ class Product extends Model
         $products = $this->find($id);
         $products->delete();
     }
+
+		public function getProductOptionByProductId($product_id)
+		{
+			$product_option = Product::where('product_id', '=', $product_id)
+			->with(array('ProductAttribute' => function($query) {
+						$query->with(array('productOption' => function($query2) {
+							$query2->with('productOptionValue');
+					 }));
+				}))
+				->get();
+				return $product_option;
+		}
 }

@@ -11,14 +11,23 @@
                               {{ Form::label('Inventories: ', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
                         </div>
 
+                          <div class="form-group row">
+                            <div class="col-xs-2 col-md-2">
 
-                          @foreach($ids_inventories as $key1 => $row1)
-                          @foreach($row1 as $col1)
-
-                             <!-- <input type="hidden" value="{{$col1}}" id="atrr-{{$key1}}" name="atrr-{{$key1}}"> -->
+                            </div>
+                          @foreach($option_names as $opname)
+                            <div class="col-xs-2 col-md-2">
+                             {{$opname}}
+                            </div>
 
                           @endforeach
-                          @endforeach
+                          <div class="col-xs-2 col-md-2">
+                              Quantity
+                          </div>
+                          <div class="col-xs-2 col-md-2">
+                              Action
+                          </div>
+                        </div>
 
 
 

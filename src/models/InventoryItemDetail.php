@@ -46,25 +46,13 @@ class InventoryItemDetail extends Model
     //     return $arr;
     // }
 
-    protected function addProducts($request){
-    	/*$this->fill([
-                'id_brands'            => $request->id_brands,
-                'products_sku'         => $request->products_sku,
-                'meta_keywords'        => $request->meta_keywords,
-                'meta_description'     => $request->meta_description
-            ]);*/
+    public function getInventoriesByProductId($product_id){
 
-            // $this->fill([
-            //     'fk_brand'             => 1,
-            //     'meta_keywords'        => $request['meta_keywords'],
-            //     'meta_description'     => $request['meta_description'],
-            //     'fk_product_status'    => $request['fk_product_status'],
-            //     'products_sku'         => $request['products_sku'],
-            //     'base_price'           => $request['base_price']
-            // ]);
-						//
-            // $this->save();
-            // return $this->product_id;
+			$selected = InventoryItemDetail::join('map_product_inventory_item', 'inventory_item_detail.fk_inventory_item', '=', 'map_product_inventory_item.fk_inventory_item')
+					->where('map_product_inventory_item.fk_product','=', $product_id)
+					->select('inventory_item_detail.fk_inventory_item', 'inventory_item_detail.fk_product_option_values')
+					->get();
+ 			return $selected;
     }
 
     protected function updateProducts($request,$id){
