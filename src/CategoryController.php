@@ -25,7 +25,8 @@ class CategoryController extends Controller
     {
        // Categories array with spaces in category_name
        $categories = $this->getCategoriesTree();
-       return view('categories::index',compact('categories'));
+       $page_title = "Categories";
+       return view('categories::index',compact('categories','page_title'));
     }
 
 
@@ -33,14 +34,20 @@ class CategoryController extends Controller
     {
         $categories = $this->getCategoriesTree();
         $languages = Language::getAllLanguages();
-        return view('categories::create',compact('languages','categories'));
+        $page_title = "Add Category";
+        return view('categories::create',compact('languages','categories','page_title'));
     }
 
     public function store(Request $request)
     {
-        
         // Validating Inputs
-        $validator = Validator::make(Input::all(),array_merge(Category::rules(),Category_description::rules()));
+        $messages = [
+            'category_name.*.required' => 'The Category Name field is required.',
+            'category_description.*.required' => 'The Category Description field is required.',
+            'category_name.*.max' => 'The Category Name may not be greater than 60 characters.',
+            'category_description.*.max' => 'The Category Description may not be greater than 2000 characters.',
+        ];
+        $validator = Validator::make(Input::all(),array_merge(Category::rules(),Category_description::rules()),$messages);
 
         // If Validation Fails
         if ($validator->fails()) {
@@ -58,7 +65,13 @@ class CategoryController extends Controller
 
     public function show($id)
     {
-        //
+        $page_title = $id." - Category";
+        $category = Category::with(array('categoriesDescriptions' => function($query) {
+               $query->with(array('language'));
+           }))->find($id);
+        
+        //dd($category);
+        return view('categories::show',compact('category','page_title'));
     }
 
     public function edit($id)
@@ -70,14 +83,20 @@ class CategoryController extends Controller
         // Categories array with spaces in category_name
         $categories = $this->getCategoriesTree();
         $languages = Language::getAllLanguages();
-
-        return view('categories::edit',compact('categories','languages','edit_categories','edit_categories_description','id'));
+        $page_title = "Edit Category";
+        return view('categories::edit',compact('categories','languages','edit_categories','edit_categories_description','id','page_title'));
     }
 
     public function update(Request $request, $id_categories)
     {
         // Validating Inputs
-        $validator = Validator::make(Input::all(),array_merge(Category::rules($id_categories),Category_description::rules($id_categories)));
+        $messages = [
+            'category_name.*.required' => 'The Category Name field is required.',
+            'category_description.*.required' => 'The Category Description field is required.',
+            'category_name.*.max' => 'The Category Name may not be greater than 60 characters.',
+            'category_description.*.max' => 'The Category Description may not be greater than 2000 characters.',
+        ];
+        $validator = Validator::make(Input::all(),array_merge(Category::rules($id_categories),Category_description::rules($id_categories)),$messages);
 
         if ($validator->fails()) {
             $messages = $validator->messages();
@@ -118,7 +137,7 @@ class CategoryController extends Controller
 
             $this->globalRecursive[$this->globalIteration]['category_id'] = $row['category_id'];
             $this->globalRecursive[$this->globalIteration]['category_name'] = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',$indent).$span.' '.$row['categories_description']['category_name'];
-            $this->globalRecursive[$this->globalIteration]['category_description'] = $row['categories_description']['category_description'];
+            $this->globalRecursive[$this->globalIteration]['sort_order'] = $row['sort_order'];
             $this->globalRecursive[$this->globalIteration]['products'] = Map_product_category::where(['fk_category' => $row['category_id']])->count();
             
             $this->globalIteration++;

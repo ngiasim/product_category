@@ -11,7 +11,6 @@ class Category_description extends Model
 	protected $table = 'category_description';
     protected $primaryKey = "category_description_id";
 
-
     protected $fillable = ['fk_language','fk_category','category_name','category_description'];
 
     public function categories()
@@ -19,14 +18,22 @@ class Category_description extends Model
         return $this->belongsTO('App\Models\Category', 'fk_category', 'id');
     }
 
-    protected function rules($except_category_id=""){
-        $arr =  array(                 
-        );
+    // public function language()
+    // {
+    //     return $this->hasOne('App\Language', 'fk_language', 'language_id');
+    // }
 
-         /*$arr =  array(        
-            'category_name'            => 'required|max:60|unique:categories_description,category_name,'.$except_category_id,
-            'categories_description'     => 'required|max:2000'           
-        );*/
+    public function language()
+    {
+        return $this->belongsTO('App\Language', 'fk_language', 'language_id');
+    }
+
+
+    protected function rules($except_category_id=""){
+        $arr =  array(        
+            'category_name.*'              => 'required|max:60',
+            'category_description.*'     => 'required|max:2000'           
+        );
 
        /* if($except_category_id!=""){ 
             $arr['category_name'] = 'required|max:60|unique:categories_description,category_name,'.$except_category_id; 

@@ -20,15 +20,18 @@
           <!-- -->
             <div class="panel panel-default">
                 <div class="panel-body">
+
                     {!! Form::open(['url' => 'products','id'=>'form_add_product']) !!}
 
                       <div class="form-group row">
                          {{ Form::label('Product Name: ', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
                         @foreach($languages as $row)
-                         <div class="col-xs-12 col-md-5">
+                          <div class="col-xs-12 col-md-5">
                               {{ Form::text('products_name['.$row["language_id"].']',null, array('required', 
                                   'class'=>'form-control form-control-lg '.$row['direction'],'placeholder'=>$row['name'] )) 
                               }}
+                              @if ($errors->has('products_name.'.$row["language_id"])) <p class="help-block error">{{ $errors->first('products_name.'.$row["language_id"]) }}</p> @endif
+                        
                           </div>
                         @endforeach
                         </div>
@@ -39,6 +42,7 @@
                         @foreach($languages as $row)
                          <div class="col-xs-12 col-md-5">
                             {{ Form::textarea('products_description['.$row["language_id"].']', null, ['class' => 'description '.$row['direction'] ]) }} 
+                            @if ($errors->has('products_description.'.$row["language_id"])) <p class="help-block error">{{ $errors->first('products_description.'.$row["language_id"]) }}</p> @endif
                           </div>
                         @endforeach
                         </div>
@@ -109,19 +113,8 @@
 
                 </div>
             </div>
-          <!-- -->
      </div>
 </div>
-
-
-<div class="container">
-     <div class="row">
-          <div class="col-md-10 col-md-offset-1">
-               fahim
-        </div>
-    </div>
-</div>
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
 <script>

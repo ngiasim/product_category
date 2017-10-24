@@ -19,14 +19,18 @@ class Product_description extends Model
         return $this->belongsTO('App\Models\Product', 'fk_product', 'product_description_id');
     }
 
+    public function language()
+    {
+        return $this->belongsTO('App\Language', 'fk_language', 'language_id');
+    }
+
     protected function rules($except_product_id=""){
-        $arr =  array(                 
+       
+        $arr =  array(        
+            'products_name.*'            => 'required|max:60',
+            'products_description.*'     => 'required|max:2000'           
         );
-        /*$arr =  array(        
-            'products_name'            => 'required|max:60|unique:products_description,products_name,'.$except_product_id,
-            'products_description'     => 'required|max:2000'           
-        );
-*/
+
         return $arr;
     }
 

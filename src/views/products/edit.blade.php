@@ -31,6 +31,8 @@
                               {{ Form::text('products_name['.$row["language_id"].']',$edit_products_description[$i]['products_name'], array('required', 
                                   'class'=>'form-control form-control-lg '.$row['direction'],'placeholder'=>$row['name'])) 
                               }}
+                              @if ($errors->has('products_name.'.$row["language_id"])) <p class="help-block error">{{ $errors->first('products_name.'.$row["language_id"]) }}</p> @endif
+                        
                           </div>
                         <?php $i++; ?>
                         @endforeach
@@ -43,6 +45,8 @@
                         @foreach($languages as $row)
                               <div class="col-xs-12 col-md-5">
                             {{ Form::textarea('products_description['.$row["language_id"].']', $edit_products_description[$i]['products_description'], ['class' => 'description '.$row['direction']]) }} 
+                            @if ($errors->has('products_description.'.$row["language_id"])) <p class="help-block error">{{ $errors->first('products_description.'.$row["language_id"]) }}</p> @endif
+                         
                           </div>
                         <?php $i++; ?>
                         @endforeach

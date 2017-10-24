@@ -33,7 +33,8 @@ class ProductController extends Controller
     {
         //$products =  Product::with('productsDescription')->take(100)->get();
         $products =  Product::with('productsDescription')->simplePaginate(100);
-        return view('products::index',compact('products'));
+        $page_title = "Product";
+        return view('products::index',compact('products','page_title'));
     }
 
     public function getProducts()
@@ -50,7 +51,8 @@ class ProductController extends Controller
         return \DataTables::of($data)
         ->addColumn('id', function ($product) {
 
-            $return = $product->product_id;
+            $return = '';
+            $return .= '<a title="View Product" target="_blank" class="actionLink" href="/products/'.$product->product_id.'">'.$product->product_id.'</a> ';
             return $return;
 
         })
@@ -84,14 +86,17 @@ class ProductController extends Controller
             return $return;
 
         })
-        ->rawColumns(['action']) ->make(true);
+        ->rawColumns(['id','action']) ->make(true);
 
     }
 
     public function seo($id)
     {
         $edit_products = Product::find($id);
-        return view('products::seo',compact('edit_products','id'));
+
+        $page_title = $id." - SEO";
+        return view('products::seo',compact('edit_products','id','page_title'));
+
     }
 
     public function updateSeo(Request $request)
@@ -115,13 +120,15 @@ class ProductController extends Controller
 
     public function attributes($id)
     {
-        return view('products::attributes',compact('id'));
+        $page_title = $id." - Attributes";
+        return view('products::attributes',compact('id','page_title'));
     }
 
     public function logs($id)
     {
-        
-        return view('products::logs',compact('id'));
+
+        $page_title = $id." - Logs";
+        return view('products::logs',compact('id','page_title'));
     }
 
     public function create()
@@ -129,13 +136,21 @@ class ProductController extends Controller
         $categories = $this->getCategoriesTree();
         $languages = Language::getAllLanguages();
         $statuses = Product_status::getAllStatuses();
-        return view('products::create',compact('languages','statuses','categories'));
+        $page_title = "Add Product";
+        return view('products::create',compact('languages','statuses','categories','page_title'));
     }
 
     public function store(Request $request)
     {
         // Validating Inputs
-        $validator = Validator::make(Input::all(),array_merge(Product::rules(),Product_description::rules()));
+        $messages = [
+            'products_name.*.required' => 'The Products Name field is required.',
+            'products_description.*.required' => 'The Products Description field is required.',
+            'products_name.*.max' => 'The Products Name may not be greater than 60 characters.',
+            'products_description.*.max' => 'The Products Description may not be greater than 2000 characters.',
+        ];
+
+        $validator = Validator::make(Input::all(),array_merge(Product::rules(),Product_description::rules()),$messages);
 
         // If Validation Fails
         if ($validator->fails()) {
@@ -154,7 +169,13 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        //
+        $page_title = $id." - Product";
+        $product = Product::with(array('productsDescriptions' => function($query) {
+               $query->with(array('language'));
+           }))->find($id);
+
+        //dd($product);
+        return view('products::show',compact('product','page_title'));
     }
 
 
@@ -168,13 +189,20 @@ class ProductController extends Controller
         $get_mapped_category_ids = Map_product_category::where(['fk_product'=>$id])->pluck('fk_category')->toArray();
         $get_mapped_ids = Map_product_category::where(['fk_product'=>$id])->orderBy('fk_category','asc')->pluck('map_product_category_id')->toArray();
         $get_mapped_categories =$this->getParentCategories($get_mapped_category_ids);
-        return view('products::edit',compact('languages','statuses','edit_products','edit_products_description','id','categories','get_mapped_categories','get_mapped_ids'));
+        $page_title = $id." - Product";
+        return view('products::edit',compact('languages','statuses','edit_products','edit_products_description','id','categories','get_mapped_categories','get_mapped_ids','page_title'));
     }
 
     public function update(Request $request, $product_id)
     {
         // Validating Inputs
-        $validator = Validator::make(Input::all(),array_merge(Product::rules($product_id),Product_description::rules($product_id)));
+        $messages = [
+            'products_name.*.required' => 'The Products Name field is required.',
+            'products_description.*.required' => 'The Products Description field is required.',
+            'products_name.*.max' => 'The Products Name may not be greater than 60 characters.',
+            'products_description.*.max' => 'The Products Description may not be greater than 2000 characters.',
+        ];
+        $validator = Validator::make(Input::all(),array_merge(Product::rules($product_id),Product_description::rules($product_id)),$messages);
 
         if ($validator->fails()) {
             $messages = $validator->messages();
@@ -207,16 +235,17 @@ class ProductController extends Controller
     }
 
     public function uploadImages($id)
-    {   
+    {
         $path = $this->getImageDirectoryByProductId($id);
         $get_images = Product_image::where(['fk_product'=>$id])->get();
-        return view('products::uploadimage',compact('id','get_images','path'));
+        $page_title = $id." - Image";
+        return view('products::uploadimage',compact('id','get_images','path','page_title'));
     }
 
     public function storeImages(Request $request)
-    {   
+    {
         //dd($request->all());
-       
+
         $rules = [
             'uploaded_image.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'sort_order.*'     => 'required|integer',
@@ -276,7 +305,7 @@ class ProductController extends Controller
     }
 
     public function getImageDirectoryByProductId($product_id)
-    {    
+    {
         $created_at = Product::where(['product_id'=>$product_id])->pluck('created_at')->first();
         $path =  'content/'.date('Y/m/', strtotime($created_at)).$product_id;
         File::exists(base_path('public/'.$path)) or File::makeDirectory(base_path('public/'.$path), $mode = 0755, $recursive = true, $force = false);
@@ -301,12 +330,13 @@ class ProductController extends Controller
     }
 
     public function categorization($id)
-    {    
+    {
         $categories = $this->getCategoriesTree();
         $get_mapped_category_ids = Map_product_category::where(['fk_product'=>$id])->pluck('fk_category')->toArray();
         $get_mapped_ids = Map_product_category::where(['fk_product'=>$id])->orderBy('fk_category','asc')->pluck('map_product_category_id')->toArray();
         $get_mapped_categories =$this->getParentCategories($get_mapped_category_ids);
-        return view('products::categorization',compact('id','categories','get_mapped_categories','get_mapped_ids'));
+        $page_title = $id." - Categorization";
+        return view('products::categorization',compact('id','categories','get_mapped_categories','get_mapped_ids','page_title'));
     }
 
     public function addTags(Request $request)
