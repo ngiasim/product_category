@@ -37,7 +37,8 @@ class InventoryController extends Controller
         }))
        ->get();
        //dd($inventoryObj);
-       return view('inventory::index',compact('inventoryObj'));
+       $meta_data = Product::getMetaDataById($id);
+       return view('inventory::index',compact('inventoryObj','meta_data'));
     }
 
     public function show($id)
@@ -55,7 +56,8 @@ class InventoryController extends Controller
        ->get();
        //dd($inventoryObj);
        $id = $product_id;
-       return view('inventory::index',compact('inventoryObj','product_id','id'));
+       $meta_data = Product::getMetaDataById($id);
+       return view('inventory::index',compact('inventoryObj','product_id','id','meta_data'));
 
     }
 

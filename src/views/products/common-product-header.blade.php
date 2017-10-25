@@ -14,3 +14,13 @@
       <a class="btn  btn-primary btn-xs" href="{{url('products/logs/'.$id)}}">Logs</a>
     </div>
 </div>
+
+  <div>
+    <br>
+    <br>
+      <p style="float:left">Name : <b>{{$meta_data['products_description']['products_name']}}</b></p>
+      <p style="float:left; margin-left:50px;">SKU : <b>{{$meta_data['products_sku']}}</b></p>
+      <p style="float:left; margin-left:50px;">Status : <b>{{$meta_data['products_status']['status_name']}}</b></p>
+      <p style="float:left; margin-left:50px;">Price : <b>{{$meta_data['base_price']}}</b></p>   
+  </div>
+
