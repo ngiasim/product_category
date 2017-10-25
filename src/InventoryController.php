@@ -64,11 +64,6 @@ class InventoryController extends Controller
         $obj = input::all();
 
         $product_id = $obj["product_id"];
-        // Soft Deleting from database
-        //InventoryItem::deleteInventory($id);
-        //InventoryItemDetail::deleteInventoryItemDetail($id);
-        //MapProductInventoryItem::deleteMapping($product_id,$id);
-        //return redirect('/inventory');
         $variable = InventoryItemDetail::where("fk_inventory_item","=",$id)->get();
         foreach ($variable as $key => $value) {
           InventoryItemDetail::deleteInventoryItemDetail($value->inventory_item_detail_id);
@@ -89,10 +84,13 @@ class InventoryController extends Controller
 
          $selected = $objInvItemDetail->getInventoriesByProductId($product_id);
          $selected_attr = [];
+         $selected_qty = [];
         ////***************** Generate Sytem Existing atrribute array **********///
          foreach ($selected as $sel ) {
               $selected_attr[$sel->fk_inventory_item][]=$sel->fk_product_option_values;
+              $selected_qty[$sel->fk_inventory_item] = $sel->qty_onhand;
          }
+         //dd($selected_qty);
          ////***************** End **********///
 
         $product_option = $objProduct->getProductOptionByProductId($product_id);
@@ -103,19 +101,26 @@ class InventoryController extends Controller
         $display_inventories = $this->getattributesarraywithname($product_option);
 
          /**************** Compile Two Arrays With Identicat restriction**********/
+         $qt_inv = [];
+         $new_qt_inv = [];
          foreach ($ids_inventories as $key => $value) {
               foreach ($selected_attr as $keyatrr => $valueatrr) {
                 if($value === array_intersect($value, $valueatrr) && $valueatrr === array_intersect($valueatrr, $value)) {
-                    unset($display_inventories[$key]);
+                    //unset($display_inventories[$key]);
+                    $qt_inv[$key]=$selected_qty[$keyatrr];
+                    $new_qt_inv[$key] = $keyatrr;
+                    //continue;
                   } else {
+                    //$qt_inv[$key]=0;
+                    // continue;
                   }
               }
          }
          /*********************End*************************/
-
+         //dd($new_qt_inv);
          $id = $product_id;
          $ids_inventories = $ids_inventories_one;
-         $inventoryAddView = \View::make('inventory::create', compact('display_inventories','ids_inventories','product_id','id','option_names'))->render();
+         $inventoryAddView = \View::make('inventory::create', compact('new_qt_inv','display_inventories','ids_inventories','product_id','id','option_names','qt_inv'))->render();
          $data = array(
              "inventoryAddView" => $inventoryAddView
          );
@@ -236,6 +241,7 @@ class InventoryController extends Controller
      {
 
           $obj = input::all();
+
           $attributes = "";
           $underscore = "";
           $ids_atrr;
@@ -251,6 +257,18 @@ class InventoryController extends Controller
           }
 
           $productObj = Product::find($obj["product_id"]);
+          if($obj["method"]=="update")
+          {
+            //dd($obj["inv"]);
+
+            $invantoryObj = InventoryItem::find($obj["inv"]);
+            $qty_diff = $obj["qty"] - $invantoryObj->qty_onhand;
+            $invantoryObj->qty_onhand = $obj["qty"];
+            $invantoryObj->qty_total = $invantoryObj->qty_total+$qty_diff;
+            $invantoryObj->save();
+
+          }else if ($obj["method"]=="add")
+          {
 
           $invantoryObj = new InventoryItem();
           $invantoryObj->inventory_code = $productObj->products_sku."_".$attributes;
@@ -275,8 +293,7 @@ class InventoryController extends Controller
           $mapinvantoryObj->fk_inventory_item = $invantoryObj->inventory_id;
           $mapinvantoryObj->save();
 
-
-
+        }
 
           return redirect('/products/inventory/'.$obj["product_id"]);
       }

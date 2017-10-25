@@ -48,20 +48,38 @@
                               </div>
                               @endforeach
                               <input type="hidden" value="{{$product_id}}" id="product_id" name="product_id">
+                              <?php $v = 0;?>
+                              @foreach($qt_inv as $key5 => $col5)
 
-                              <div class="col-xs-2 col-md-2">
-                                <!-- <input type="hidden" value="{{$key}}" id="" name=""> -->
-                                {{ Form::number('qty','0', array('required',
-                                    'class'=>'form-control form-control-lg ','min'=>"1"))
-                                }}
-                              </div>
-                              <div class="col-xs-2 col-md-2">
-                                    <!-- <button type="button" class="btn btn-success" >
-                                        Add </span>
-                                    </button> -->
-                                    {!! Form::submit('Add', ['id' => 'tool_sbmitclick', 'class' => 'btn btn-primary margin-right-10' ]) !!}
+                                    @if($key5 == $key)
+                                    <div class="col-xs-2 col-md-2">
+                                    {{ Form::number('qty',$col5, array('required',
+                                        'class'=>'form-control form-control-lg ','min'=>"1"))
+                                    }}
+                                    </div>
+                                    <?php $v++;?>
+                                    <div class="col-xs-2 col-md-2">
+                                      <input type="hidden" value="update" id="method" name="method">
+                                      <input type="hidden" value="{{$new_qt_inv[$key]}}" id="inv" name="inv">
+                                          {!! Form::submit('Update', ['id' => 'tool_sbmitclick', 'class' => 'btn btn-primary margin-right-10' ]) !!}
+                                    </div>
+                                    @endif
 
-                              </div>
+
+                              @endforeach
+
+                              @if($v == 0)
+                                  <div class="col-xs-2 col-md-2">
+                                    {{ Form::number('qty','0', array('required',
+                                        'class'=>'form-control form-control-lg ','min'=>"1"))
+                                    }}
+                                  </div>
+                                  <div class="col-xs-2 col-md-2">
+                                    <input type="hidden" value="add" id="method" name="method">
+                                        {!! Form::submit('Add', ['id' => 'tool_sbmitclick', 'class' => 'btn btn-primary margin-right-10' ]) !!}
+                                  </div>
+                              @endif
+
                               </div>
                               {!! Form::close() !!}
                           @endforeach
