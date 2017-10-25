@@ -97,11 +97,11 @@ class ProductController extends Controller
     }
 
     public function seo($id)
-    {
+    {  
+        $meta_data = Product::getMetaDataById($id);
         $edit_products = Product::find($id);
-
         $page_title = $id." - SEO";
-        return view('products::seo',compact('edit_products','id','page_title'));
+        return view('products::seo',compact('meta_data','edit_products','id','page_title'));
 
     }
 
@@ -132,9 +132,9 @@ class ProductController extends Controller
 
     public function logs($id)
     {
-
+        $meta_data = Product::getMetaDataById($id);
         $page_title = $id." - Logs";
-        return view('products::logs',compact('id','page_title'));
+        return view('products::logs',compact('meta_data','id','page_title'));
     }
 
     public function create()
@@ -327,6 +327,8 @@ class ProductController extends Controller
 
     public function edit($id)
     {
+
+        $meta_data = Product::getMetaDataById($id);
         
         $edit_products = Product::find($id);
         $edit_products_description = Product_description::where(['fk_product'=>$id])->get();
@@ -337,7 +339,7 @@ class ProductController extends Controller
         $get_mapped_ids = Map_product_category::where(['fk_product'=>$id])->orderBy('fk_category','asc')->pluck('map_product_category_id')->toArray();
         $get_mapped_categories =$this->getParentCategories($get_mapped_category_ids);
         $page_title = $id." - Product";
-        return view('products::edit',compact('languages','statuses','edit_products','edit_products_description','id','categories','get_mapped_categories','get_mapped_ids','page_title'));
+        return view('products::edit',compact('meta_data','languages','statuses','edit_products','edit_products_description','id','categories','get_mapped_categories','get_mapped_ids','page_title'));
     }
 
     public function update(Request $request, $product_id)
@@ -421,10 +423,12 @@ class ProductController extends Controller
 
     public function uploadImages($id)
     {
+        $meta_data = Product::getMetaDataById($id);
+
         $path = $this->getImageDirectoryByProductId($id);
         $get_images = Product_image::where(['fk_product'=>$id])->get();
         $page_title = $id." - Image";
-        return view('products::uploadimage',compact('id','get_images','path','page_title'));
+        return view('products::uploadimage',compact('meta_data','id','get_images','path','page_title'));
     }
 
     public function storeImages(Request $request)
@@ -516,12 +520,14 @@ class ProductController extends Controller
 
     public function categorization($id)
     {
+        $meta_data = Product::getMetaDataById($id);
+
         $categories = $this->getCategoriesTree();
         $get_mapped_category_ids = Map_product_category::where(['fk_product'=>$id])->pluck('fk_category')->toArray();
         $get_mapped_ids = Map_product_category::where(['fk_product'=>$id])->orderBy('fk_category','asc')->pluck('map_product_category_id')->toArray();
         $get_mapped_categories =$this->getParentCategories($get_mapped_category_ids);
         $page_title = $id." - Categorization";
-        return view('products::categorization',compact('id','categories','get_mapped_categories','get_mapped_ids','page_title'));
+        return view('products::categorization',compact('meta_data','id','categories','get_mapped_categories','get_mapped_ids','page_title'));
     }
 
     public function addTags(Request $request)

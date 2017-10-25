@@ -22,6 +22,10 @@ class Product extends Model
     {
         return $this->hasMany('App\Models\Product_description', 'fk_product', 'product_id');
     }
+    public function productsStatus()
+    {
+        return $this->belongsTo('App\Models\Product_status', 'fk_product_status', 'product_status_id');
+    }
     public function ProductAttribute()
     {
        return $this->hasMany('App\Models\ProductAttribute', 'fk_product', 'product_id');
@@ -37,6 +41,11 @@ class Product extends Model
        return $this->hasMany('App\Models\MapProductInventoryItem', 'fk_product', 'product_id');
     }
 
+    protected function getMetaDataById($id)
+    {
+       return $this->with(['productsDescription','productsStatus'])->find($id)->toArray();
+    }
+    
 
     protected function addProducts($request){
     	
