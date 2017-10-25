@@ -139,11 +139,10 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = $this->getCategoriesTree();
         $languages = Language::getAllLanguages();
         $statuses = Product_status::getAllStatuses();
         $page_title = "Add Product";
-        return view('products::create',compact('languages','statuses','categories','page_title'));
+        return view('products::create',compact('languages','statuses','page_title'));
     }
 
     public function store(Request $request)
@@ -334,12 +333,8 @@ class ProductController extends Controller
         $edit_products_description = Product_description::where(['fk_product'=>$id])->get();
         $languages = Language::getAllLanguages();
         $statuses = Product_status::getAllStatuses();
-        $categories = $this->getCategoriesTree();
-        $get_mapped_category_ids = Map_product_category::where(['fk_product'=>$id])->pluck('fk_category')->toArray();
-        $get_mapped_ids = Map_product_category::where(['fk_product'=>$id])->orderBy('fk_category','asc')->pluck('map_product_category_id')->toArray();
-        $get_mapped_categories =$this->getParentCategories($get_mapped_category_ids);
         $page_title = $id." - Product";
-        return view('products::edit',compact('meta_data','languages','statuses','edit_products','edit_products_description','id','categories','get_mapped_categories','get_mapped_ids','page_title'));
+        return view('products::edit',compact('meta_data','languages','statuses','edit_products','edit_products_description','id','page_title'));
     }
 
     public function update(Request $request, $product_id)
@@ -421,108 +416,12 @@ class ProductController extends Controller
         return $cat_names;
     }
 
-    public function uploadImages($id)
-    {
-        $meta_data = Product::getMetaDataById($id);
-
-        $path = $this->getImageDirectoryByProductId($id);
-        $get_images = Product_image::where(['fk_product'=>$id])->get();
-        $page_title = $id." - Image";
-        return view('products::uploadimage',compact('meta_data','id','get_images','path','page_title'));
-    }
-
-    public function storeImages(Request $request)
-    {
-        //dd($request->all());
-
-        $rules = [
-            'uploaded_image.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'sort_order.*'     => 'required|integer',
-        ];
-
-        $validator = Validator::make(Input::all(), $rules);
-        if ($validator->fails()) {
-            $messages = $validator->messages();
-            return Redirect::back()->withErrors($validator)->withInput();
-        }
-        else{
-
-            $content_path = $this->getImageDirectoryByProductId($request->product_id);
-            $path =  base_path('public/'.$content_path);
-            $count = Product_image::where(['fk_product'=>$request->product_id])->count();
-            $is_default=0;
-            if($count==0){ $is_default=1; }
-
-
-
-            foreach($request->uploaded_image as $key => $image){
-                $imageName = time().'-'.$key.'.'.$image->getClientOriginalExtension();
-                $image->move($path, $imageName);
-
-                $zoom = $path.'/zoom';
-                $img = Image::make($path.'/'.$imageName);
-                $img->resize(1000, 1000, function ($constraint) {
-                    $constraint->aspectRatio('1:1');
-                })->save($zoom.'/'.$imageName);
-
-                $item = $path.'/item';
-                $img = Image::make($path.'/'.$imageName);
-                $img->resize(680, 680, function ($constraint) {
-                    $constraint->aspectRatio('1:1');
-                })->save($item.'/'.$imageName);
-
-                $list = $path.'/list';
-                $img = Image::make($path.'/'.$imageName);
-                $img->resize(220, 220, function ($constraint) {
-                    $constraint->aspectRatio('1:1');
-                })->save($list.'/'.$imageName);
-
-                File::delete($path.'/'.$imageName);
-
-                $record = [
-                    'fk_product'=>$request->product_id,
-                    'sort_order'=>$request['sort_order'][$key],
-                    'image_path'=>$imageName,
-                    'is_default'=>$is_default
-                ];
-                Product_image::addImage($record);
-                $is_default = 0;
-
-            }
-            return back()->with('success','You have successfully upload image.');
-        }
-    }
-
-    public function getImageDirectoryByProductId($product_id)
-    {
-        $created_at = Product::where(['product_id'=>$product_id])->pluck('created_at')->first();
-        $path =  'content/'.date('Y/m/', strtotime($created_at)).$product_id;
-        File::exists(base_path('public/'.$path)) or File::makeDirectory(base_path('public/'.$path), $mode = 0755, $recursive = true, $force = false);
-        // Directory for Zoom
-        $zoom = $path.'/zoom';
-        File::exists($zoom) or File::makeDirectory($zoom);
-
-        // Directory for item
-        $item = $path.'/item';
-        File::exists($item) or File::makeDirectory($item);
-
-        // Directory for list
-        $list = $path.'/list';
-        File::exists($list) or File::makeDirectory($list);
-        return $path;
-    }
-
-    public function removeImages($product_image_id)
-    {
-        Product_image::removeImages($product_image_id);
-        return redirect()->back();
-    }
 
     public function categorization($id)
     {
         $meta_data = Product::getMetaDataById($id);
 
-        $categories = $this->getCategoriesTree();
+        $categories = Category::getCategoriesTree();
         $get_mapped_category_ids = Map_product_category::where(['fk_product'=>$id])->pluck('fk_category')->toArray();
         $get_mapped_ids = Map_product_category::where(['fk_product'=>$id])->orderBy('fk_category','asc')->pluck('map_product_category_id')->toArray();
         $get_mapped_categories =$this->getParentCategories($get_mapped_category_ids);
@@ -561,30 +460,5 @@ class ProductController extends Controller
         return redirect('/products');
     }
 
-    // Return Global Array of Database Fetched Categories Tree
-    private function getCategoriesTree()
-    {
-        $childrenRecursive = Category::with(['childrenRecursive','categoriesDescription'])->where('id_parent', 0)->get()->toArray();
-        $this->getCategoriesRecursive($childrenRecursive,0);
-        return $this->globalRecursive;
-    }
-
-    // Recursive Function To Get Categories Tree In Global Array
-    private function getCategoriesRecursive($cat,$indent=0)
-    {
-        foreach($cat as $row){
-            $span = '<span class="glyphicon glyphicon-triangle-right"></span>';
-            if($row['id_parent'] == 0){ $span = ''; }
-
-            $this->globalRecursive[$this->globalIteration]['category_id'] = $row['category_id'];
-            $this->globalRecursive[$this->globalIteration]['category_name'] = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',$indent).$span.' '.$row['categories_description']['category_name'];
-            $this->globalRecursive[$this->globalIteration]['category_description'] = $row['categories_description']['category_description'];
-
-            $this->globalIteration++;
-            if (!empty($row['children_recursive'])){
-                $this->getCategoriesRecursive($row['children_recursive'],$indent+1);
-            }
-
-        }
-    }
+    
 }

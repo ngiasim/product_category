@@ -45,6 +45,11 @@ class Product extends Model
     {
        return $this->with(['productsDescription','productsStatus'])->find($id)->toArray();
     }
+
+    protected function getCreatedAtById($id)
+    {
+       return $this->where(['product_id'=>$id])->pluck('created_at')->first();
+    }
     
 
     protected function addProducts($request){
