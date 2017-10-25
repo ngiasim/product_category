@@ -11,7 +11,7 @@ class Product extends Model
     protected $table = 'product';
     protected $primaryKey = "product_id";
 
-    protected $fillable = ['fk_brand','fk_product_status','products_sku','meta_keywords','meta_description','base_price','is_virtual','is_unlimited'];
+    protected $fillable = ['fk_brand','fk_product_status','products_sku','meta_keywords','meta_description','base_price','qty_unlimited'];
 
 
     public function productsDescription()
@@ -43,8 +43,7 @@ class Product extends Model
         $meta_keywords         =  (empty($request['meta_keywords'])?'':$request['meta_keywords']);
         $meta_description      =  (empty($request['meta_description'])?'':$request['meta_description']);
         $base_price            =  (empty($request['base_price'])?0:$request['base_price']);
-        $is_virtual            =  (empty($request['is_virtual'])?0:1);
-        $is_unlimited          =  (empty($request['is_unlimited'])?0:1);
+        $qty_unlimited          =  (empty($request['qty_unlimited'])?0:1);
 
             $this->fill([
                 'fk_brand'             => 1,
@@ -53,8 +52,7 @@ class Product extends Model
                 'fk_product_status'    => $request['fk_product_status'],
                 'products_sku'         => $request['products_sku'],
                 'base_price'           => $base_price,
-                'is_virtual'           => $is_virtual,
-                'is_unlimited'         => $is_unlimited,
+                'qty_unlimited'         => $qty_unlimited,
             ]);
 
             $this->save();
@@ -66,8 +64,7 @@ class Product extends Model
         $meta_keywords         =  (empty($request['meta_keywords'])?'':$request['meta_keywords']);
         $meta_description      =  (empty($request['meta_description'])?'':$request['meta_description']);
         $base_price            =  (empty($request['base_price'])?0:$request['base_price']);
-        $is_virtual            =  (empty($request['is_virtual'])?0:1);
-        $is_unlimited          =  (empty($request['is_unlimited'])?0:1);
+        $qty_unlimited          =  (empty($request['qty_unlimited'])?0:1);
 
         $products = $this->find($id);
         $products->meta_keywords        = $meta_keywords;
@@ -75,8 +72,7 @@ class Product extends Model
         $products->fk_product_status    = $request['fk_product_status'];
         $products->products_sku         = $request['products_sku'];
         $products->base_price           = $base_price;
-        $products->is_virtual           = $is_virtual;
-        $products->is_unlimited         = $is_unlimited;
+        $products->qty_unlimited         = $qty_unlimited;
 
         $products->save();
     }

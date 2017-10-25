@@ -92,21 +92,12 @@
                           </div>
                         </div>
 
-                        <div class="form-group row">
-                         {{ Form::label('Is Virtual:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
-                         <div class="col-xs-6 col-md-1">
-                       
-                              {{ Form::checkbox('is_virtual', 1, null, ['class' => 'form-control']) }}
-
-                          </div>
-                        </div>
-
 
                         <div class="form-group row">
-                         {{ Form::label('Is Unlimited:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                         {{ Form::label('Has Unlimited Quantity:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
                          <div class="col-xs-6 col-md-1">
                        
-                              {{ Form::checkbox('is_unlimited', 1, null, ['class' => 'form-control']) }}
+                              {{ Form::checkbox('qty_unlimited', 1, null, ['class' => 'form-control']) }}
 
                           </div>
                         </div>
