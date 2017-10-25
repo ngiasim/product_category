@@ -62,6 +62,12 @@ class ProductController extends Controller
             return $return;
 
         })
+        ->addColumn('quantity', function ($product) {
+
+            $total = $this->getInventoryCountByProductId($product->product_id);
+            return $total;
+
+        })
         ->addColumn('products_sku', function ($product) {
 
             $return = $product->products_sku;
@@ -141,7 +147,7 @@ class ProductController extends Controller
     }
 
     public function store(Request $request)
-    {
+    { 
         // Validating Inputs
         $messages = [
             'products_name.*.required' => 'The Products Name field is required.',
@@ -150,7 +156,36 @@ class ProductController extends Controller
             'products_description.*.max' => 'The Products Description may not be greater than 2000 characters.',
         ];
 
-        $validator = Validator::make(Input::all(),array_merge(Product::rules(),Product_description::rules()),$messages);
+
+        // Status Change Code Starts here
+        $selected_status_code = 'dr';
+        $selected_status = Product_status::select('status_code')->where('product_status_id',$request['fk_product_status'])->first();
+        if(!empty($selected_status)){
+            $selected_status_code = $selected_status->status_code;
+        }
+        
+        if($selected_status_code == 'dr'){
+            $rules = $this->changeStatusToDraft();
+        }
+
+        if($selected_status_code == 're'){
+            $rules = $this->changeStatusToReview();
+        }
+
+        if($selected_status_code == 'pu'){
+            return Redirect::to('products/create')->with('error','Product can not be published, No inventry found for this product.')->withInput();
+            
+        }
+
+        if($selected_status_code == 'ou'){
+            return Redirect::to('products/create')->with('error','Can not set Product status to "Out of Stock" at this point.')->withInput();
+        }
+
+        $validator = Validator::make(
+            Input::all(),
+            $rules,
+            $messages
+        );
 
         // If Validation Fails
         if ($validator->fails()) {
@@ -167,6 +202,117 @@ class ProductController extends Controller
         }
     }
 
+    
+
+    public function changeStatusToDraft()
+    {
+        $product_rules =  array(
+            'fk_product_status'          => 'integer',
+            'products_sku'               => 'max:200',
+            'base_price'                 => 'nullable|regex:/^\d*(\.\d{1,2})?$/'
+        );
+
+        $product_description_rules =  array(        
+            'products_name.1'            => 'required|max:60',
+            'products_name.*'            => 'max:60',
+            'products_description.*'     => 'max:2000'           
+        );
+
+        return array_merge($product_rules,$product_description_rules);
+    }
+
+    public function changeStatusToReview()
+    {
+        $product_rules =  array(
+            'fk_product_status'          => 'required|integer',
+            'products_sku'               => 'required|max:200',
+            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/'
+        );
+
+        $product_description_rules =  array(        
+            'products_name.*'            => 'required|max:60',
+            'products_description.*'     => 'required|max:2000'           
+        );
+
+        return array_merge($product_rules,$product_description_rules);
+    }
+
+    public function changeStatusToPublish($product_id)
+    {
+        $product_rules =  array(
+            'fk_product_status'          => 'required|integer',
+            'products_sku'               => 'required|max:200',
+            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/'
+        );
+
+        $product_description_rules =  array(        
+            'products_name.*'            => 'required|max:60',
+            'products_description.*'     => 'required|max:2000'           
+        );
+
+        $total = $this->getInventoryCountByProductId($product_id);
+        if($total>0){
+            return array(
+                'rules'=>array_merge($product_rules,$product_description_rules),
+                'status'=>'success',
+                'message'=>'This product have positive inventory.'
+            );
+        }else{
+            return array(
+                'rules'=>array_merge($product_rules,$product_description_rules),
+                'status'=>'failure',
+                'message'=>'Product can not be published, No inventry found for this product.'
+            );
+
+        }
+    }
+
+    public function changeStatusToOutOfStock($product_id)
+    {
+        $product_rules =  array(
+            'fk_product_status'          => 'required|integer',
+            'products_sku'               => 'required|max:200',
+            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/'
+        );
+
+        $product_description_rules =  array(        
+            'products_name.*'            => 'required|max:60',
+            'products_description.*'     => 'required|max:2000'           
+        );
+
+        $total = $this->getInventoryCountByProductId($product_id);
+        if($total>0){
+            return array(
+                'rules'=>array_merge($product_rules,$product_description_rules),
+                'status'=>'failure',
+                'message'=>'Positive inventory found, can not change product status to "Out Of Stock"'
+            );
+        }else{
+            return array(
+                'rules'=>array_merge($product_rules,$product_description_rules),
+                'status'=>'success',
+                'message'=>'No inventry found for this product.'
+            );
+
+        }
+    }
+
+    public function getInventoryCountByProductId($product_id){
+        $inventoryObj = Product::where('product_id', '=', $product_id)
+       ->with(array('mapProductInventoryItem' => function($query) {
+              $query->with(array('inventory'));
+             }))
+       ->get()->toArray();
+       
+       $total = 0;
+       foreach($inventoryObj[0]['map_product_inventory_item'] as $key => $row){
+            
+           $total+=($row['inventory']['qty_onhand']-$row['inventory']['qty_reserved']-$row['inventory']['qty_admin_reserved'])+$row['inventory']['qty_preorder'];
+
+        }
+       return $total;
+    }
+
     public function show($id)
     {
         $page_title = $id." - Product";
@@ -181,6 +327,7 @@ class ProductController extends Controller
 
     public function edit($id)
     {
+        
         $edit_products = Product::find($id);
         $edit_products_description = Product_description::where(['fk_product'=>$id])->get();
         $languages = Language::getAllLanguages();
@@ -202,7 +349,45 @@ class ProductController extends Controller
             'products_name.*.max' => 'The Products Name may not be greater than 60 characters.',
             'products_description.*.max' => 'The Products Description may not be greater than 2000 characters.',
         ];
-        $validator = Validator::make(Input::all(),array_merge(Product::rules($product_id),Product_description::rules($product_id)),$messages);
+
+        // Status Change Code Starts here
+        $selected_status_code = 'dr';
+        $selected_status = Product_status::select('status_code')->where('product_status_id',$request['fk_product_status'])->first();
+        if(!empty($selected_status)){
+            $selected_status_code = $selected_status->status_code;
+        }
+
+        if($selected_status_code == 'dr'){
+            $rules = $this->changeStatusToDraft();
+        }
+
+        if($selected_status_code == 're'){
+            $rules = $this->changeStatusToReview();
+        }
+
+        if($selected_status_code == 'pu'){
+            $response = $this->changeStatusToPublish($product_id);
+            if($response['status'] == 'failure'){
+                return Redirect::back()->with('error',$response['message'])->withInput();
+            }
+            $rules = $response['rules'];
+            
+        }
+
+        if($selected_status_code == 'ou'){
+            $response = $this->changeStatusToOutOfStock($product_id);
+            if($response['status'] == 'failure'){
+                return Redirect::back()->with('error',$response['message'])->withInput();
+            }
+            $rules = $response['rules'];
+        }
+
+        $validator = Validator::make(
+            Input::all(),
+            $rules,
+            $messages
+        );
+        // Status Change Code Ends here
 
         if ($validator->fails()) {
             $messages = $validator->messages();

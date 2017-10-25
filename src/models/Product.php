@@ -11,7 +11,7 @@ class Product extends Model
     protected $table = 'product';
     protected $primaryKey = "product_id";
 
-    protected $fillable = ['fk_brand','fk_product_status','products_sku','meta_keywords','meta_description','base_price'];
+    protected $fillable = ['fk_brand','fk_product_status','products_sku','meta_keywords','meta_description','base_price','qty_unlimited'];
 
 
     public function productsDescription()
@@ -27,41 +27,32 @@ class Product extends Model
        return $this->hasMany('App\Models\ProductAttribute', 'fk_product', 'product_id');
     }
 
-		public function inventory()
+	public function inventory()
     {
        return $this->hasMany('App\Models\InventoryItem', 'fk_product', 'product_id');
     }
 
-		public function mapProductInventoryItem()
+	public function mapProductInventoryItem()
     {
        return $this->hasMany('App\Models\MapProductInventoryItem', 'fk_product', 'product_id');
     }
-    protected function rules($except_id=""){
-        $arr =  array(
-            'meta_keywords'              => 'required|max:200' ,
-            'meta_description'           => 'required|max:2000',
-            'fk_product_status'          => 'required|integer',
-            'products_sku'               => 'required|max:200',
-            'base_price'                 => 'required|integer'
-        );
-        return $arr;
-    }
+
 
     protected function addProducts($request){
-    	/*$this->fill([
-                'id_brands'            => $request->id_brands,
-                'products_sku'         => $request->products_sku,
-                'meta_keywords'        => $request->meta_keywords,
-                'meta_description'     => $request->meta_description
-            ]);*/
+    	
+        $meta_keywords         =  (empty($request['meta_keywords'])?'':$request['meta_keywords']);
+        $meta_description      =  (empty($request['meta_description'])?'':$request['meta_description']);
+        $base_price            =  (empty($request['base_price'])?0:$request['base_price']);
+        $qty_unlimited          =  (empty($request['qty_unlimited'])?0:1);
 
             $this->fill([
                 'fk_brand'             => 1,
-                'meta_keywords'        => $request['meta_keywords'],
-                'meta_description'     => $request['meta_description'],
+                'meta_keywords'        => $meta_keywords,
+                'meta_description'     => $meta_description,
                 'fk_product_status'    => $request['fk_product_status'],
                 'products_sku'         => $request['products_sku'],
-                'base_price'           => $request['base_price']
+                'base_price'           => $base_price,
+                'qty_unlimited'         => $qty_unlimited,
             ]);
 
             $this->save();
@@ -69,12 +60,20 @@ class Product extends Model
     }
 
     protected function updateProducts($request,$id){
+
+        $meta_keywords         =  (empty($request['meta_keywords'])?'':$request['meta_keywords']);
+        $meta_description      =  (empty($request['meta_description'])?'':$request['meta_description']);
+        $base_price            =  (empty($request['base_price'])?0:$request['base_price']);
+        $qty_unlimited          =  (empty($request['qty_unlimited'])?0:1);
+
         $products = $this->find($id);
-        $products->meta_keywords        = $request['meta_keywords'];
-        $products->meta_description     = $request['meta_description'];
+        $products->meta_keywords        = $meta_keywords;
+        $products->meta_description     = $meta_description;
         $products->fk_product_status    = $request['fk_product_status'];
         $products->products_sku         = $request['products_sku'];
-        $products->base_price           = $request['base_price'];
+        $products->base_price           = $base_price;
+        $products->qty_unlimited         = $qty_unlimited;
+
         $products->save();
     }
     protected function updateProductSeo($request){
@@ -89,8 +88,8 @@ class Product extends Model
         $products->delete();
     }
 
-		public function getProductOptionByProductId($product_id)
-		{
+	public function getProductOptionByProductId($product_id)
+	{
 			$product_option = Product::where('product_id', '=', $product_id)
 			->with(array('ProductAttribute' => function($query) {
 						$query->with(array('productOption' => function($query2) {
@@ -99,5 +98,5 @@ class Product extends Model
 				}))
 				->get();
 				return $product_option;
-		}
+	}
 }

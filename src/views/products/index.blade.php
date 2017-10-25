@@ -33,6 +33,7 @@
             <th>ID</th>
             <th>Product Name</th>
             <th>Price</th> 
+            <th>Quantity</th> 
             <th>SKU</th> 
             <th>Action</th> 
           </tr>
@@ -68,6 +69,7 @@ $(document).ready(function() {
             {data: 'id', name: 'id'},
             {data: 'products_name', name: 'products_name'},
             {data: 'price', name: 'price'},
+            {data: 'quantity', name: 'quantity'},
             {data: 'products_sku', name: 'products_sku'},
             {data: 'action', name: 'action'},
 

@@ -21,13 +21,26 @@
             <div class="panel panel-default">
                 <div class="panel-body">
 
+                @if(session()->has('success'))
+                  <div class="alert alert-success">
+                      <strong>Success - </strong> {{ session()->get('success') }}
+                  </div>
+                @endif
+
+                @if(session()->has('error'))
+                  <div class="alert alert-danger">
+                      <strong>Alert - </strong> {{ session()->get('error') }}
+                  </div>
+                @endif
+
+
                     {!! Form::open(['url' => 'products','id'=>'form_add_product']) !!}
 
                       <div class="form-group row">
                          {{ Form::label('Product Name: ', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
                         @foreach($languages as $row)
                           <div class="col-xs-12 col-md-5">
-                              {{ Form::text('products_name['.$row["language_id"].']',null, array('required', 
+                              {{ Form::text('products_name['.$row["language_id"].']',null, array( 
                                   'class'=>'form-control form-control-lg '.$row['direction'],'placeholder'=>$row['name'] )) 
                               }}
                               @if ($errors->has('products_name.'.$row["language_id"])) <p class="help-block error">{{ $errors->first('products_name.'.$row["language_id"]) }}</p> @endif
@@ -61,7 +74,7 @@
                         <div class="form-group row">
                          {{ Form::label('Product SKU:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
                          <div class="col-xs-12 col-md-10">
-                              {{ Form::text('products_sku', null, array('required', 
+                              {{ Form::text('products_sku', null, array(
                                   'class'=>'form-control form-control-lg' )) 
                               }}
                               @if ($errors->has('products_sku')) <p class="help-block error">{{ $errors->first('products_sku') }}</p> @endif
@@ -71,35 +84,26 @@
                         <div class="form-group row">
                          {{ Form::label('Product Price:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
                          <div class="col-xs-12 col-md-10">
-                              {{ Form::text('base_price', null, array('required', 
+                       
+                              {{ Form::number('base_price', null, array('step'=>'any', 
                                   'class'=>'form-control form-control-lg' )) 
                               }}
                               @if ($errors->has('base_price')) <p class="help-block error">{{ $errors->first('base_price') }}</p> @endif
                           </div>
                         </div>
+
+
+                        <div class="form-group row">
+                         {{ Form::label('Has Unlimited Quantity:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                         <div class="col-xs-6 col-md-1">
+                       
+                              {{ Form::checkbox('qty_unlimited', 1, null, ['class' => 'form-control']) }}
+
+                          </div>
+                        </div>
                         
 
-                        <div class="form-group row">
-                         {{ Form::label('Meta Keywords:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
-                         <div class="col-xs-12 col-md-10">
-                              {{ Form::text('meta_keywords', null, array('required', 
-                                  'class'=>'form-control form-control-lg' )) 
-                              }}
-
-                              @if ($errors->has('meta_keywords')) <p class="help-block error">{{ $errors->first('meta_keywords') }}</p> @endif
-                          </div>
-                        </div>
-
-                        <div class="form-group row">
-                         {{ Form::label('Meta Description:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
-                          <div class="col-sm-10">
-                              {{ Form::text('meta_description', null, array('required', 
-                                  'class'=>'form-control form-control-lg' )) 
-                              }}
-
-                              @if ($errors->has('meta_description')) <p class="help-block error">{{ $errors->first('meta_description') }}</p> @endif
-                          </div>
-                        </div>
+                        
 
                         <div class="form-group row">
                          <div class="col-md-offset-2 col-md-10 text-center">
@@ -130,33 +134,11 @@
 
   $("#form_add_product").validate({
       rules: {
-        products_name: {
-          required: true,
-          minlength: 2,
-          maxlength: 60,
-        },
-        products_description: {
-          required: true,
-          maxlength: 2000,
-        },
         fk_product_status: {
           required: true
         },
         products_sku: {
-          required: true,
           maxlength: 50
-        },
-        base_price: {
-          required: true,
-          number: true
-        },
-        meta_keywords: {
-          required: true,
-          maxlength: 200
-        },
-        meta_description: {
-          required: true,
-          maxlength: 2000
         }
       },
       messages: {
