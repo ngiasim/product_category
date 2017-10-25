@@ -51,7 +51,7 @@ class InventoryItemDetail extends Model
 			$selected = InventoryItemDetail::join('map_product_inventory_item', 'inventory_item_detail.fk_inventory_item', '=', 'map_product_inventory_item.fk_inventory_item')
 			->join('inventory_item', 'inventory_item_detail.fk_inventory_item', '=', 'inventory_item.inventory_id')
 					->where('map_product_inventory_item.fk_product','=', $product_id)
-					->select('inventory_item_detail.fk_inventory_item', 'inventory_item_detail.fk_product_option_values','inventory_item.qty_onhand')
+					->select('inventory_item_detail.fk_inventory_item', 'inventory_item_detail.fk_product_option_values','inventory_item.qty_onhand','inventory_price')
 					->get();
  			return $selected;
     }

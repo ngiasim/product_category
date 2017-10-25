@@ -89,8 +89,9 @@ class InventoryController extends Controller
          foreach ($selected as $sel ) {
               $selected_attr[$sel->fk_inventory_item][]=$sel->fk_product_option_values;
               $selected_qty[$sel->fk_inventory_item] = $sel->qty_onhand;
+              $selected_price[$sel->fk_inventory_item] = $sel->inventory_price;
          }
-         //dd($selected_qty);
+         //dd($selected_price);
          ////***************** End **********///
 
         $product_option = $objProduct->getProductOptionByProductId($product_id);
@@ -108,6 +109,7 @@ class InventoryController extends Controller
                 if($value === array_intersect($value, $valueatrr) && $valueatrr === array_intersect($valueatrr, $value)) {
                     //unset($display_inventories[$key]);
                     $qt_inv[$key]=$selected_qty[$keyatrr];
+                    $price_inv[$key] = $selected_price[$keyatrr];
                     $new_qt_inv[$key] = $keyatrr;
                     //continue;
                   } else {
@@ -117,10 +119,10 @@ class InventoryController extends Controller
               }
          }
          /*********************End*************************/
-         //dd($new_qt_inv);
+         //dd($price_inv);
          $id = $product_id;
          $ids_inventories = $ids_inventories_one;
-         $inventoryAddView = \View::make('inventory::create', compact('new_qt_inv','display_inventories','ids_inventories','product_id','id','option_names','qt_inv'))->render();
+         $inventoryAddView = \View::make('inventory::create', compact('price_inv','new_qt_inv','display_inventories','ids_inventories','product_id','id','option_names','qt_inv'))->render();
          $data = array(
              "inventoryAddView" => $inventoryAddView
          );
@@ -241,7 +243,6 @@ class InventoryController extends Controller
      {
 
           $obj = input::all();
-
           $attributes = "";
           $underscore = "";
           $ids_atrr;
@@ -265,6 +266,7 @@ class InventoryController extends Controller
             $qty_diff = $obj["qty"] - $invantoryObj->qty_onhand;
             $invantoryObj->qty_onhand = $obj["qty"];
             $invantoryObj->qty_total = $invantoryObj->qty_total+$qty_diff;
+            $invantoryObj->inventory_price = $obj["price"];
             $invantoryObj->save();
 
           }else if ($obj["method"]=="add")
@@ -275,6 +277,7 @@ class InventoryController extends Controller
           $invantoryObj->qty_onhand = $obj["qty"];
           $invantoryObj->qty_total = $obj["qty"];
           $invantoryObj->barcode = "323232";
+          $invantoryObj->inventory_price = $obj["price"];
           $invantoryObj->save();
 
           //$invantoryObj->created_by = Auth::user()->user_id;

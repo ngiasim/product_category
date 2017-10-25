@@ -11,6 +11,8 @@
           <th>QTY Total</th>
           <th>QTY Admin Reserved</th>
           <th>QTY Available</th>
+          <th>Price</th>
+          <th>Price Impact</th>
           <th>Created At</th>
           <th>Action</th>
         </tr>
@@ -27,6 +29,8 @@
                 <td>{{$row->inventory->qty_total}}</td>
                 <td>{{$row->inventory->qty_admin_reserved}}</td>
                 <td>{{($row->inventory->qty_onhand-$row->inventory->qty_reserved-$row->inventory->qty_admin_reserved)+$row->inventory->qty_preorder}}</td>
+                <td>{{$row->inventory->inventory_price}}</td>
+                <td><center><b> {{$row->inventory->inventory_price_prefix}} </b></center></td>
                 <td>{{\Carbon\Carbon::parse($row->inventory->created_at)->toDayDateTimeString() }}</td>
                 <td>
                      <!-- <span class="table-action-icons">

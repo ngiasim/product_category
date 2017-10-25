@@ -25,6 +25,9 @@
                               Quantity
                           </div>
                           <div class="col-xs-2 col-md-2">
+                              Price
+                          </div>
+                          <div class="col-xs-2 col-md-2">
                               Action
                           </div>
                         </div>
@@ -57,6 +60,11 @@
                                         'class'=>'form-control form-control-lg ','min'=>"1"))
                                     }}
                                     </div>
+                                    <div class="col-xs-2 col-md-2">
+                                    {{ Form::number('price',$price_inv[$key5], array('required',
+                                        'class'=>'form-control form-control-lg ','min'=>"0"))
+                                    }}
+                                    </div>
                                     <?php $v++;?>
                                     <div class="col-xs-2 col-md-2">
                                       <input type="hidden" value="update" id="method" name="method">
@@ -74,6 +82,12 @@
                                         'class'=>'form-control form-control-lg ','min'=>"1"))
                                     }}
                                   </div>
+                                  <div class="col-xs-2 col-md-2">
+                                  {{ Form::number('price','0', array('required',
+                                      'class'=>'form-control form-control-lg ','min'=>"0"))
+                                  }}
+                                  </div>
+
                                   <div class="col-xs-2 col-md-2">
                                     <input type="hidden" value="add" id="method" name="method">
                                         {!! Form::submit('Add', ['id' => 'tool_sbmitclick', 'class' => 'btn btn-primary margin-right-10' ]) !!}
