@@ -5,36 +5,36 @@ Route::group([
 
     Route::group(['middleware' => ['web']], function () {
 		Route::group([
-		'middleware' => ['auth']
-	], function () {
+			'middleware' => ['auth']
+		], function () {
 
-  //Route::resource('products/inventory','ngiasim\categories\InventoryController');
-  Route::get('products/inventory/create','ngiasim\categories\InventoryController@create');
-  Route::get('products/inventory/{id}','ngiasim\categories\InventoryController@show');
-  Route::post('products/inventory','ngiasim\categories\InventoryController@store');
-  Route::delete('products/inventory/delete/{id}','ngiasim\categories\InventoryController@destroy');
+			Route::group(['prefix' => 'products'], function () {
+				//Route::resource('products/inventory','ngiasim\categories\InventoryController');
+				Route::get('inventory/create','ngiasim\categories\InventoryController@create');
+				Route::get('inventory/{id}','ngiasim\categories\InventoryController@show');
+				Route::post('inventory','ngiasim\categories\InventoryController@store');
+				Route::delete('inventory/delete/{id}','ngiasim\categories\InventoryController@destroy');
 
+				Route::get('getproducts','ngiasim\categories\ProductController@getProducts');
+				Route::get('categorization/{id}','ngiasim\categories\ProductController@categorization');
 
-	Route::get('products/getproducts','ngiasim\categories\ProductController@getProducts');
-	Route::get('products/categorization/{id}','ngiasim\categories\ProductController@categorization');
+				Route::get('seo/{id}','ngiasim\categories\ProductController@seo');
+				Route::post('updateseo','ngiasim\categories\ProductController@updateSeo');
+				Route::get('attributes/{id}','ngiasim\categories\ProductController@attributes');
+				Route::get('logs/{id}','ngiasim\categories\ProductController@logs');
 
-	Route::get('products/seo/{id}','ngiasim\categories\ProductController@seo');
-	Route::post('products/updateseo','ngiasim\categories\ProductController@updateSeo');
-	Route::get('products/attributes/{id}','ngiasim\categories\ProductController@attributes');
-	Route::get('products/logs/{id}','ngiasim\categories\ProductController@logs');
+				Route::get('images/{id}','ngiasim\categories\ProductController@uploadImages');
+				Route::post('storeimages','ngiasim\categories\ProductController@storeImages');
+				Route::get('removeimages/{id}','ngiasim\categories\ProductController@removeImages');
 
-	Route::get('products/images/{id}','ngiasim\categories\ProductController@uploadImages');
-	Route::post('products/storeimages','ngiasim\categories\ProductController@storeImages');
-	Route::get('products/removeimages/{id}','ngiasim\categories\ProductController@removeImages');
+				Route::post('addTags','ngiasim\categories\ProductController@addTags');
+				Route::get('removeTags/{id}','ngiasim\categories\ProductController@removeTags');
+				
+				
+			});
+			Route::resource('products','ngiasim\categories\ProductController');
+			Route::resource('categories','ngiasim\categories\CategoryController');
 
-	Route::post('products/addTags','ngiasim\categories\ProductController@addTags');
-	Route::get('products/removeTags/{id}','ngiasim\categories\ProductController@removeTags');
-
-
-        Route::resource('categories','ngiasim\categories\CategoryController');
-        Route::resource('products','ngiasim\categories\ProductController');
-
-
-	});
+		});
     });
 });
