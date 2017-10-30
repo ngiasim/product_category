@@ -61,8 +61,10 @@
 
                         <div class="form-group row">
                             <div class="col-md-offset-2 col-md-10 text-center">
-                                {!! Form::submit('Update & Close', array("class"=>"btn btn-primary margin-right-10","name"=>"tool-close")) !!}
- 								{!! Form::submit('Update & Stay', array("class"=>"btn btn-primary","name"=>"tool-stay")) !!}
+                                <button type="submit" class="btn btn-primary margin-right-10" name="sc">{{Config::get('view.button_save_and_close')}}</button>
+                                  <button type="submit" class="btn btn-primary margin-right-10" name="ss">{{Config::get('view.button_save_and_stay')}}</button>
+                              
+                                  <a class="btn btn-link" href="{{ url('/products') }}">{{Config::get('view.button_back_to_list')}} </a>   
                             </div>
                         </div>
                     {!! Form::close() !!}

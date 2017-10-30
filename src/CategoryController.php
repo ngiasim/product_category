@@ -56,7 +56,18 @@ class CategoryController extends Controller
             // Inserting Data in Category and Category_description Table
             $category_id = Category::addCategories($request); 
             Category_description::addCategoriesDescription($request,$category_id); 
-            return redirect('/categories');
+
+            if(isset($request['ss'])) {
+            return redirect()->route('categories.edit',$category_id)
+                ->with('success','Category created successfully');
+            } else if(isset($request['san'])){
+                return redirect()->route('categories.create')
+                    ->with('success','Category created successfully');
+            } else {
+                return redirect()->route('categories.index')
+                    ->with('success','Category created successfully');
+            }
+
         }
     }
 
@@ -102,7 +113,14 @@ class CategoryController extends Controller
             Category::updateCategories($request,$id_categories); 
             Category_description::updateCategoriesDescription($request,$id_categories); 
             
-            return redirect('/categories');
+
+             if(isset($request['ss'])) {
+                return redirect()->route('categories.edit',$id_categories)
+                ->with('success','Category updated successfully');
+            } else {
+                return redirect()->route('categories.index')
+                    ->with('success','Category updated successfully');
+            }
         }
     }
 

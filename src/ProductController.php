@@ -85,9 +85,9 @@ class ProductController extends Controller
             $return = '';
             //$return .= '<a title="Show Inventories" class="actionLink" href="/inventory/'.$product->product_id.'"><i class="fa fa-sitemap" aria-hidden="true"></i></a> ';
 
-            $return .= '<a title="Edit" class="actionLink" href="'.route('products.edit',$product->product_id).'"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a> ';
+            $return .= '<span class="table-action-icons"><a title="Edit" href="'.route('products.edit',$product->product_id).'"><i class="glyphicon glyphicon-edit"></i></a></span>';
 
-            $return .= '<a href="javascript:void(0)" data-type="user" data-toggle="modal" data-target="#myModal" data-uri="products/destroy/"'.$product->product_id.'"  class="actionLink confirm-delete" ><i class="glyphicon glyphicon-trash"></i> </a>';
+             $return .= '<span class="table-action-icons"><a  onclick="deleteProduct('.$product->product_id.');return false;" href="#"><i class="glyphicon glyphicon-trash"></i></a></span>';
 
             return $return;
 
@@ -120,7 +120,13 @@ class ProductController extends Controller
             return Redirect::back()->withErrors($validator)->withInput();
         }else{
             Product::updateProductSeo($request);
-            return back()->with('success','Product SEO updated successfully.');
+
+            if(isset($request['ss'])) {
+                return back()->with('success','Product SEO updated successfully.');
+            } else {
+                return redirect()->route('products.index')
+                    ->with('success','Product SEO updated successfully.');
+            }
         }
     }
 
@@ -197,7 +203,17 @@ class ProductController extends Controller
             $product_id = Product::addProducts($request);
             Product_description::addProductsDescription($request,$product_id);
 
-            return redirect('/products');
+            if(isset($request['ss'])) {
+            return redirect()->route('products.edit',$product_id)
+                ->with('success','Product created successfully');
+            } else if(isset($request['san'])){
+                return redirect()->route('products.create')
+                    ->with('success','Product created successfully');
+            } else {
+                return redirect()->route('products.index')
+                    ->with('success','Product created successfully');
+            }
+
         }
     }
 
@@ -326,15 +342,18 @@ class ProductController extends Controller
 
     public function edit($id)
     {
-
-        $meta_data = Product::getMetaDataById($id);
-        
         $edit_products = Product::find($id);
-        $edit_products_description = Product_description::where(['fk_product'=>$id])->get();
-        $languages = Language::getAllLanguages();
-        $statuses = Product_status::getAllStatuses();
-        $page_title = $id." - Product";
-        return view('products::edit',compact('meta_data','languages','statuses','edit_products','edit_products_description','id','page_title'));
+        if(!empty($edit_products)){
+            $edit_products_description = Product_description::where(['fk_product'=>$id])->get();
+            $languages = Language::getAllLanguages();
+            $statuses = Product_status::getAllStatuses();
+            $page_title = $id." - Product";
+            $meta_data = Product::getMetaDataById($id);
+            return view('products::edit',compact('meta_data','languages','statuses','edit_products','edit_products_description','id','page_title'));
+        }else{
+            return redirect()->route('products.index')
+                    ->with('error','Product Id does not exist.');
+        }
     }
 
     public function update(Request $request, $product_id)
@@ -395,7 +414,14 @@ class ProductController extends Controller
             Product::updateProducts($request,$product_id);
             Product_description::updateProductsDescription($request,$product_id);
 
-            return redirect('/products');
+            if(isset($request['ss'])) {
+                return redirect()->route('products.edit',$product_id)
+                ->with('success','Product updated successfully');
+            } else {
+                return redirect()->route('products.index')
+                    ->with('success','Product updated successfully');
+            }
+            
         }
     }
 
@@ -457,7 +483,8 @@ class ProductController extends Controller
     {
         Product::deleteProducts($product_id);
         Product_description::deleteProductsDescription($product_id);
-        return redirect('/products');
+        session()->flash('success', 'Product deleted successfully.');
+        return response()->json(['status'=>'success']);
     }
 
     

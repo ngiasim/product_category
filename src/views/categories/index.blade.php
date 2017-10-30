@@ -14,6 +14,20 @@
           </div>
      </div>
     <div class='row'>
+
+                @if(session()->has('success'))
+                  <div class="alert alert-success">
+                      <strong>Success - </strong> {{ session()->get('success') }}
+                  </div>
+                @endif
+
+                @if(session()->has('error'))
+                  <div class="alert alert-danger">
+                      <strong>Alert - </strong> {{ session()->get('error') }}
+                  </div>
+                @endif
+
+
           <div class="col-md-12 no-padding-right">
                <a href="categories/create" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus"></i> Add New</a>
           </div>

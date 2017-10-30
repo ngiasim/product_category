@@ -10,6 +10,20 @@
           </div>
      </div>
      <div class="row">
+
+                @if(session()->has('success'))
+                  <div class="alert alert-success">
+                      <strong>Success - </strong> {{ session()->get('success') }}
+                  </div>
+                @endif
+
+                @if(session()->has('error'))
+                  <div class="alert alert-danger">
+                      <strong>Alert - </strong> {{ session()->get('error') }}
+                  </div>
+                @endif
+
+
           <div class="col-md-12 no-padding-right">
                <a href="bulkupload" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus"></i> Upload CSV</a>
                <a href="products/create" class="btn btn-primary pull-right margin-right-10"><i class="glyphicon glyphicon-plus"></i> Add New</a>
@@ -77,6 +91,26 @@ $(document).ready(function() {
     });
 });
 
+
+
+function deleteProduct(product_id) {
+  
+  var delete_record = confirm("Sure to delete ? ");
+  if (delete_record == true) {
+    $.ajax({
+      url : '/products/'+product_id,
+      type: 'DELETE', 
+      data: {"_token": "{{ csrf_token() }}"},
+      success: function(response) {
+          if(response.status == "success"){
+            location.reload();
+          }else{
+            alert("Something went wrong! Try again later.");
+          }
+      }
+    });
+  }
+}
 
 </script>
 @endsection

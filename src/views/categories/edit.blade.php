@@ -18,6 +18,19 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     
+                  @if(session()->has('success'))
+                  <div class="alert alert-success">
+                      <strong>Success - </strong> {{ session()->get('success') }}
+                  </div>
+                  @endif
+
+                  @if(session()->has('error'))
+                    <div class="alert alert-danger">
+                        <strong>Alert - </strong> {{ session()->get('error') }}
+                    </div>
+                  @endif
+                  
+                    
                     {!! Form::open(['method'=>'patch','url' => "categories/$id",'id'=>'form_update_category']) !!}
                     
                         
@@ -114,9 +127,11 @@
                         </div>
 
                         <div class="form-group row">
-                              <div class="col-md-offset-2 col-md-10 text-center">
-                                   {!! Form::submit('Update & Close', array("class"=>"btn btn-primary margin-right-10","name"=>"tool-close")) !!}
- {!! Form::submit('Update & Stay', array("class"=>"btn btn-primary","name"=>"tool-stay")) !!}
+                          <div class="col-md-offset-2 col-md-10 text-center">
+                                <button type="submit" class="btn btn-primary margin-right-10" name="sc">{{Config::get('view.button_save_and_close')}}</button>
+                                  <button type="submit" class="btn btn-primary margin-right-10" name="ss">{{Config::get('view.button_save_and_stay')}}</button>
+                                
+                                  <a class="btn btn-link" href="{{ url('/categories') }}">{{Config::get('view.button_back_to_list')}} </a>    
                           </div>
                         </div>
                     {!! Form::close() !!}

@@ -107,10 +107,13 @@
 
                         <div class="form-group row">
                          <div class="col-md-offset-2 col-md-10 text-center">
-                              <input type="submit" value="Save & Stay" class="btn btn-primary margin-right-10">
-                              <input type="submit" value="Save & Add New" class="btn btn-primary margin-right-10">
-                              <input type="submit" value="Save" class="btn btn-primary margin-right-10">
-                            <input type="submit" value="Back To Listing" class="btn btn-primary">
+                              <button type="submit" class="btn btn-primary margin-right-10" name="sc">{{Config::get('view.button_save_and_close')}}</button>
+                                  <button type="submit" class="btn btn-primary margin-right-10" name="ss">{{Config::get('view.button_save_and_stay')}}</button>
+                                
+                                  <button type="submit" class="btn btn-primary margin-right-10" name="san">{{Config::get('view.button_save_and_add_new')}}</button>
+                                 
+                                  
+                                  <a class="btn btn-link" href="{{ url('/products') }}">{{Config::get('view.button_back_to_list')}} </a>
                           </div>
                         </div>
                     {!! Form::close() !!}
