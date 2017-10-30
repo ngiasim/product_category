@@ -28,6 +28,9 @@ class Category_description extends Model
         return $this->belongsTO('App\Language', 'fk_language', 'language_id');
     }
 
+    protected function getDescriptionsByProductId($id){
+        return $this->where(['fk_category'=>$id])->get();
+    }
 
     protected function rules($except_category_id=""){
         $arr =  array(        

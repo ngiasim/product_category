@@ -47,5 +47,6 @@ class CategoriesServiceProvider extends ServiceProvider
         $this->app->make('Ngiasim\Categories\CategoryController');
         $this->app->make('Ngiasim\Categories\ProductController');
         $this->app->make('Ngiasim\Categories\InventoryController');
+        $this->app->make('Ngiasim\Categories\ProductImageController');
     }
 }
