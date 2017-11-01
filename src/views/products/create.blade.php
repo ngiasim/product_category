@@ -101,6 +101,52 @@
 
                           </div>
                         </div>
+
+
+                        <div class="form-group row">
+                         {{ Form::label('Is Global:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                         <div class="col-xs-6 col-md-1">
+                       
+                              {{ Form::checkbox('is_global', 1,null, ['id' => 'is_global','class' => 'form-control']) }}
+                          </div>
+                          <div class="col-md-9">
+                              <!-- Regional Pricing Starts -->
+                            <div class="row" id="regional_pricing">
+                              <div class="col-md-12 admin-table-view">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+
+                                          <div class="form-group row">
+                                                  {{ Form::label('Region Name:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                                                <div class="col-xs-12 col-md-10">
+                                                   {{ Form::label('Price:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                                                </div>
+                                            </div>
+                                          
+                                          @foreach($regions as $i => $row)
+                                            <div class="form-group row">
+                                                  {{ Form::label($row["name"].':', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                                                <div class="col-xs-12 col-md-10">
+                                                  
+
+                                                  {{ Form::text('price['.$row["region_id"].']',0, array( 
+                                                      'class'=>'form-control form-control-lg' )) 
+                                                  }}
+                                                
+
+                                                @if ($errors->has('price.'.$row["region_id"])) <p class="help-block error">{{ $errors->first('price.'.$row["region_id"]) }}</p> @endif
+                                                </div>
+                                            </div>
+                                          @endforeach
+
+                                            
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      <!-- Regional Pricing Ends -->
+                          </div>
+                        </div>
                         
 
                         
@@ -129,6 +175,9 @@
   CKEDITOR.replaceClass = 'description';
   
   $(document).ready(function() {
+    if(!$('#is_global').is(':checked')){
+      $('#regional_pricing').show();
+    }
     $.noConflict();
     $(".rtl").arabisk();
  
@@ -147,6 +196,14 @@
       messages: {
         fk_product_status: "Please select a Product Status",
       }
+    });
+
+
+    $('#is_global').click(function() {
+        if(!$(this).is(':checked'))
+          $('#regional_pricing').show();
+        else
+          $('#regional_pricing').hide();
     });
 
 

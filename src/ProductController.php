@@ -12,6 +12,9 @@ use App\Models\Category;
 use App\Models\Category_description;
 use App\Models\Map_product_category;
 use App\Models\Product_image;
+use App\Models\Region;
+use App\Models\Product_regional_price;
+
 use App\Bulk_uploads;
 
 use DataTables;
@@ -145,10 +148,11 @@ class ProductController extends Controller
 
     public function create()
     {
+        $regions = Region::orderBy('name','asc')->get();
         $languages = Language::getAllLanguages();
         $statuses = Product_status::getAllStatuses();
         $page_title = "Add Product";
-        return view('products::create',compact('languages','statuses','page_title'));
+        return view('products::create',compact('regions','languages','statuses','page_title'));
     }
 
     public function store(Request $request)
@@ -186,6 +190,20 @@ class ProductController extends Controller
             return Redirect::to('products/create')->with('error','Can not set Product status to "Out of Stock" at this point.')->withInput();
         }
 
+        $is_global_checked =  (empty($request['is_global'])?0:1);
+        if($is_global_checked==0){
+            $regional_price_rules = array(        
+                'price.*'            => 'required|regex:/^\d*(\.\d{1,2})?$/',        
+            );
+            $rules= array_merge($rules,$regional_price_rules);
+
+            $regional_price_messages = array(
+                'price.*.required' => 'The Price field is required.',
+                'price.*.regex' => 'The Price field is not valid.',
+            );
+            $messages= array_merge($messages,$regional_price_messages);
+        }
+
         $validator = Validator::make(
             Input::all(),
             $rules,
@@ -202,7 +220,10 @@ class ProductController extends Controller
             // Inserting Data in Products and Product_description Table
             $product_id = Product::addProducts($request);
             Product_description::addProductsDescription($request,$product_id);
-
+            if($is_global_checked==0){
+                Product_regional_price::addPrice($request,$product_id);
+            }
+            
             if(isset($request['ss'])) {
             return redirect()->route('products.edit',$product_id)
                 ->with('success','Product created successfully');
@@ -346,10 +367,12 @@ class ProductController extends Controller
         if(!empty($edit_products)){
             $edit_products_description = Product_description::where(['fk_product'=>$id])->get();
             $languages = Language::getAllLanguages();
+            $regions = Region::orderBy('name','asc')->get();
+            $inserted_regions = Product_regional_price::where(['fk_product'=>$id])->get();
             $statuses = Product_status::getAllStatuses();
             $page_title = $id." - Product";
             $meta_data = Product::getMetaDataById($id);
-            return view('products::edit',compact('meta_data','languages','statuses','edit_products','edit_products_description','id','page_title'));
+            return view('products::edit',compact('regions','inserted_regions','meta_data','languages','statuses','edit_products','edit_products_description','id','page_title'));
         }else{
             return redirect()->route('products.index')
                     ->with('error','Product Id does not exist.');
@@ -398,6 +421,20 @@ class ProductController extends Controller
             $rules = $response['rules'];
         }
 
+        $is_global_checked =  (empty($request['is_global'])?0:1);
+        if($is_global_checked==0){
+            $regional_price_rules = array(        
+                'price.*'            => 'required|regex:/^\d*(\.\d{1,2})?$/',        
+            );
+            $rules= array_merge($rules,$regional_price_rules);
+
+            $regional_price_messages = array(
+                'price.*.required' => 'The Price field is required.',
+                'price.*.regex' => 'The Price field is not valid.',
+            );
+            $messages= array_merge($messages,$regional_price_messages);
+        }
+
         $validator = Validator::make(
             Input::all(),
             $rules,
@@ -407,13 +444,18 @@ class ProductController extends Controller
 
         if ($validator->fails()) {
             $messages = $validator->messages();
+            //$id = Redirect::to('products/'.$product_id.'/edit')->withErrors($validator)->withInput();
+            //dd($id);
             return Redirect::to('products/'.$product_id.'/edit')->withErrors($validator)->withInput();
         }else{
 
             // Updating Data in Categories and Categories_description Table
             Product::updateProducts($request,$product_id);
             Product_description::updateProductsDescription($request,$product_id);
-
+            if($is_global_checked==0){
+                Product_regional_price::addPrice($request,$product_id);
+            }
+            
             if(isset($request['ss'])) {
                 return redirect()->route('products.edit',$product_id)
                 ->with('success','Product updated successfully');
