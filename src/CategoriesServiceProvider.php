@@ -21,15 +21,16 @@ class CategoriesServiceProvider extends ServiceProvider
         __DIR__.'/views' => base_path('resources/views/categories'),
         ]);
 */
+        /*
         $this->publishes([
         __DIR__.'/models' => base_path('app/Models'),
-        ]);
+        ]);*/
 
          $this->publishes([
         __DIR__.'/Jobs' => base_path('app/Jobs'),
         ]);
 
-        /*$this->publishes([
+       /* $this->publishes([
         __DIR__ . '/migrations' => $this->app->databasePath() . '/migrations'
         ], 'migrations');*/
 
