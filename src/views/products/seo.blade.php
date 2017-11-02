@@ -78,9 +78,9 @@
 @endsection
 @section('script')
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
-<script>
+<script src="{{ URL::asset('js/jquery.validate.min.js')}}"></script>
 
+<script>
 
   $("#form_update_products").validate({
       rules: {
