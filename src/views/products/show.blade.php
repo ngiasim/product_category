@@ -49,14 +49,47 @@
                         </tr>
 
                         <tr>
-                            <td class="col-md-4"><b>Product Price</b></td>
+                            <td class="col-md-4"><b>Base Price</b></td>
                              <td class="text-left text-danger"><h4><strong><i class="fa fa-dollar"></i> {{$product->base_price}}/-</strong></h4></td>
                         </tr>
-                        
-                       
+
+                        <tr>
+                            <td class="col-md-4"><b>Is Global</b></td>
+                            <td class="col-md-8">{{($product->is_global==1?'Yes':'No')}}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
+
+            @if($product->is_global==0)
+            <div>
+                <table class="table table-bordered">
+                    <colgroup>
+                      <col width="20%" >
+                      <col width="80%">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th colspan="2"><h3><a>Regional Price List</a><h3></th>
+                        </tr>
+                        <tr>
+                            <th><h4>Region</h4></th>
+                            <th><h4> Price</h4></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($product->regionalPrices as $region)
+                            <tr>
+                                <td>{{$region->region->name}} : </td>
+                                <td class="text-left text-danger"><strong><i class="fa fa-dollar"></i> {{$region->price}}/-</strong></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>  
+            @endif
+
+
 
             <div>
                 <table class="table table-bordered">

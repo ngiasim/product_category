@@ -13,6 +13,10 @@ class Product_regional_price extends Model
 
     protected $fillable = ['fk_region','fk_product','price','currency_code'];
 
+    public function region()
+    {
+        return $this->belongsTo('App\Models\Region', 'fk_region', 'region_id');
+    }
 
     protected function addPriceRules($except_id=""){
         $arr =  array(

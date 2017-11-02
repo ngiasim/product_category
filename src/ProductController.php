@@ -356,7 +356,10 @@ class ProductController extends Controller
     public function show($id)
     {
         $page_title = $id." - Product";
-        $product = Product::with(array('productsDescriptions' => function($query) {
+        $product = Product::with(array('regionalPrices' => function($query) {
+               $query->with(array('region'));
+            }
+           ,'productsDescriptions' => function($query) {
                $query->with(array('language'));
            }))->find($id);
 

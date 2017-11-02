@@ -22,6 +22,11 @@ class Product extends Model
     {
         return $this->hasMany('App\Models\Product_description', 'fk_product', 'product_id');
     }
+
+    public function regionalPrices()
+    {
+        return $this->hasMany('App\Models\Product_regional_price', 'fk_product', 'product_id');
+    }
     public function productsStatus()
     {
         return $this->belongsTo('App\Models\Product_status', 'fk_product_status', 'product_status_id');
