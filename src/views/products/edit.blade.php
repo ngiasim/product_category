@@ -2,10 +2,7 @@
 
 @extends('layouts.cockpit_master')
 @section('content')
-<!-- 
-<script src="{{url('ckeditor/ckeditor.js')}}"></script> -->
-<script src="{{url('js/arabic.js')}}"></script>
-<script src="https://cdn.ckeditor.com/4.7.3/basic/ckeditor.js"></script>
+
 
 <div class="product-header">
       <h3 class="pull-left">Update Products</h3>
@@ -90,12 +87,25 @@
 
 
                         <div class="form-group row">
-                              {{ Form::label('Product Price:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
-                              <div class="col-xs-12 col-md-10">
-                              {{ Form::text('base_price', $edit_products->base_price, array( 
+                         {{ Form::label('Base Price:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                         <div class="col-xs-12 col-md-10">
+                       
+                              {{ Form::number('base_price', $edit_products->base_price, array('step'=>'any', 
                                   'class'=>'form-control form-control-lg' )) 
                               }}
                               @if ($errors->has('base_price')) <p class="help-block error">{{ $errors->first('base_price') }}</p> @endif
+                          </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                         {{ Form::label('Percent Off:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                         <div class="col-xs-12 col-md-10">
+                       
+                              {{ Form::number('percent_off', $edit_products->percent_off, array('step'=>'any', 
+                                  'class'=>'form-control form-control-lg' )) 
+                              }}
+                              @if ($errors->has('percent_off')) <p class="help-block error">{{ $errors->first('percent_off') }}</p> @endif
                           </div>
                         </div>
 
@@ -134,7 +144,7 @@
                                                   {{ Form::label($row["name"].':', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
                                                 <div class="col-xs-12 col-md-10">
                                                   @php
-                                                    $inserted=0
+                                                    $inserted='0'
                                                   @endphp
                                                   @if(!empty($inserted_regions))
                                                   @foreach($inserted_regions as $val)
@@ -185,7 +195,10 @@
 @endsection
 @section('script')
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
+<script src="{{ URL::asset('js/arabic.js')}}"></script>
+<script src="{{ URL::asset('ckeditor/ckeditor.js')}}"></script>
+<script src="{{ URL::asset('js/jquery.validate.min.js') }}"></script>
+
 <script>
 
   CKEDITOR.replaceClass = 'description';
@@ -195,7 +208,6 @@
     if(!$('#is_global').is(':checked')){
       $('#regional_pricing').show();
     }
-    $.noConflict();
     $(".rtl").arabisk();
     
   });

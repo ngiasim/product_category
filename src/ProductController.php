@@ -245,7 +245,8 @@ class ProductController extends Controller
         $product_rules =  array(
             'fk_product_status'          => 'integer',
             'products_sku'               => 'max:200',
-            'base_price'                 => 'nullable|regex:/^\d*(\.\d{1,2})?$/'
+            'base_price'                 => 'nullable|regex:/^\d*(\.\d{1,2})?$/',
+            'percent_off'                => 'nullable|max:100'
         );
 
         $product_description_rules =  array(        
@@ -262,7 +263,8 @@ class ProductController extends Controller
         $product_rules =  array(
             'fk_product_status'          => 'required|integer',
             'products_sku'               => 'required|max:200',
-            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/'
+            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/',
+            'percent_off'                => 'nullable|max:100'
         );
 
         $product_description_rules =  array(        
@@ -278,7 +280,8 @@ class ProductController extends Controller
         $product_rules =  array(
             'fk_product_status'          => 'required|integer',
             'products_sku'               => 'required|max:200',
-            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/'
+            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/',
+            'percent_off'                => 'nullable|max:100'
         );
 
         $product_description_rules =  array(        
@@ -308,7 +311,8 @@ class ProductController extends Controller
         $product_rules =  array(
             'fk_product_status'          => 'required|integer',
             'products_sku'               => 'required|max:200',
-            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/'
+            'base_price'                 => 'required|not_in:0|regex:/^\d*(\.\d{1,2})?$/',
+            'percent_off'                => 'nullable|max:100'
         );
 
         $product_description_rules =  array(        

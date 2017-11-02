@@ -3,11 +3,6 @@
 @extends('layouts.cockpit_master')
 @section('content')
 
-<!-- <script src="{{url('ckeditor/ckeditor.js')}}"></script>
- -->
-<script src="{{url('js/arabic.js')}}"></script>
-<script src="https://cdn.ckeditor.com/4.7.3/basic/ckeditor.js"></script>
-
 <div class="main-center-area">
      
     <div class="row">
@@ -82,13 +77,26 @@
                         </div>
 
                         <div class="form-group row">
-                         {{ Form::label('Product Price:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                         {{ Form::label('Base Price:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
                          <div class="col-xs-12 col-md-10">
                        
-                              {{ Form::number('base_price', null, array('step'=>'any', 
+                              {{ Form::number('base_price', 0, array('step'=>'any', 
                                   'class'=>'form-control form-control-lg' )) 
                               }}
                               @if ($errors->has('base_price')) <p class="help-block error">{{ $errors->first('base_price') }}</p> @endif
+                          </div>
+                        </div>
+
+
+
+                        <div class="form-group row">
+                         {{ Form::label('Percent Off:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
+                         <div class="col-xs-12 col-md-10">
+                       
+                              {{ Form::number('percent_off', 0, array('step'=>'any', 
+                                  'class'=>'form-control form-control-lg' )) 
+                              }}
+                              @if ($errors->has('percent_off')) <p class="help-block error">{{ $errors->first('percent_off') }}</p> @endif
                           </div>
                         </div>
 
@@ -107,11 +115,11 @@
                          {{ Form::label('Is Global:', null, ['class' => 'col-xs-12 col-md-2 col-form-label col-form-label-lg']) }}
                          <div class="col-xs-6 col-md-1">
                        
-                              {{ Form::checkbox('is_global', 1,null, ['id' => 'is_global','class' => 'form-control']) }}
+                              {{ Form::checkbox('is_global', 1,true, ['id' => 'is_global','class' => 'form-control']) }}
                           </div>
                           <div class="col-md-9">
                               <!-- Regional Pricing Starts -->
-                            <div class="row" id="regional_pricing">
+                            <div class="row" id="regional_pricing" style="display:none">
                               <div class="col-md-12 admin-table-view">
                                 <div class="panel panel-default">
                                     <div class="panel-body">
@@ -169,7 +177,14 @@
      </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
+@endsection
+@section('script')
+
+
+<script src="{{ URL::asset('js/arabic.js')}}"></script>
+<script src="{{ URL::asset('ckeditor/ckeditor.js')}}"></script>
+<script src="{{ URL::asset('js/jquery.validate.min.js')}}"></script>
+
 <script>
   
   CKEDITOR.replaceClass = 'description';
@@ -178,7 +193,6 @@
     if(!$('#is_global').is(':checked')){
       $('#regional_pricing').show();
     }
-    $.noConflict();
     $(".rtl").arabisk();
  
   });

@@ -35,6 +35,7 @@ Route::group([
 				Route::get('removeimages/{id}','ProductImageController@removeImages');
 
 				Route::post('addTags','ProductController@addTags');
+				Route::get('removeTags/{id}','ProductController@removeTags');
 			});
 
 			Route::resource('products','ProductController');
