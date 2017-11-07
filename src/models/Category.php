@@ -64,28 +64,29 @@ class Category extends Model
     protected $globalRecursive = array();
     protected $globalIteration = 0;
     // Return Global Array of Database Fetched Categories Tree
-    protected function getCategoriesTree()
+    protected function getCategoriesTree($spaces="&nbsp;&nbsp;&nbsp;&nbsp;",$arrow=">")
     {
         $childrenRecursive = $this->with(['childrenRecursive','categoriesDescription'])->where('id_parent', 0)->get()->toArray();
-        $this->getCategoriesRecursive($childrenRecursive,0); 
+        $this->getCategoriesRecursive($childrenRecursive,0,$spaces,$arrow); 
         return $this->globalRecursive;
     }
 
     // Recursive Function To Get Categories Tree In Global Array
-    private function getCategoriesRecursive($cat,$indent=0)
-    {      
+    private function getCategoriesRecursive($cat,$indent=0,$spaces,$arrow)
+    {
         foreach($cat as $row){
-            $span = '<span class="glyphicon glyphicon-triangle-right"></span>';
-            if($row['id_parent'] == 0){ $span = ''; }
+            $print_arrow = $arrow;
+            //$span = '<span class="glyphicon glyphicon-triangle-right"></span>';
+            if($row['id_parent'] == 0){ $print_arrow = ''; }
 
             $this->globalRecursive[$this->globalIteration]['category_id'] = $row['category_id'];
-            $this->globalRecursive[$this->globalIteration]['category_name'] = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',$indent).$span.' '.$row['categories_description']['category_name'];
+            $this->globalRecursive[$this->globalIteration]['category_name'] = str_repeat($spaces,$indent).$print_arrow.' '.$row['categories_description']['category_name'];
             $this->globalRecursive[$this->globalIteration]['sort_order'] = $row['sort_order'];
             $this->globalRecursive[$this->globalIteration]['products'] = Map_product_category::where(['fk_category' => $row['category_id']])->count();
             
             $this->globalIteration++;
             if (!empty($row['children_recursive'])){
-                $this->getCategoriesRecursive($row['children_recursive'],$indent+1);
+                $this->getCategoriesRecursive($row['children_recursive'],$indent+1,$spaces,$arrow);
             }
                 
         }    
