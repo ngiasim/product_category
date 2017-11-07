@@ -21,7 +21,7 @@ class CategoryController extends Controller
     public function index()
     {
        // Categories array with spaces in category_name
-       $categories = Category::getCategoriesTree();
+       $categories = Category::getCategoriesTree('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;','<span class="glyphicon glyphicon-triangle-right"></span>');
        $page_title = "Categories";
        return view('categories::index',compact('categories','page_title'));
     }
