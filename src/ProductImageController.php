@@ -93,7 +93,7 @@ class ProductImageController extends Controller
     public function getImageDirectoryByProductId($product_id)
     {
         $created_at = Product::getCreatedAtById($product_id);
-        $path =  'content/'.date('Y/m/', strtotime($created_at)).$product_id;
+        $path =  'content/products/'.date('Y/m/', strtotime($created_at)).$product_id;
         File::exists(base_path('public/'.$path)) or File::makeDirectory(base_path('public/'.$path), $mode = 0755, $recursive = true, $force = false);
         // Directory for Zoom
         $zoom = $path.'/zoom';
