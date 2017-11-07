@@ -29,8 +29,8 @@ class GiftCard extends Migration
     		$table->text('sender_message')->nullable();
     		$table->enum('is_reward', ['0', '1'])->default('0');
     		$table->enum('fully_redeemed', ['0', '1'])->default('0');
-    		$table->dateTime('last_redemption_date');
-    		$table->dateTime('date_expiry');
+    		$table->dateTime('last_redemption_date')->nullable();
+    		$table->dateTime('date_expiry')->nullable();
     		$table->integer('created_by')->default(0);
     		$table->integer('updated_by')->default(0);
     		$table->integer('deleted_by')->default(0);
