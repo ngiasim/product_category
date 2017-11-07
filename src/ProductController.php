@@ -79,7 +79,7 @@ class ProductController extends Controller
         })
         ->addColumn('price', function ($product) {
 
-            $return = $product->base_price.' -AED';
+            $return = $product->base_price.' -USD';
             return $return;
 
         })
