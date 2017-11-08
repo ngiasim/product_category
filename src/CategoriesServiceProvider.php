@@ -16,6 +16,7 @@ class CategoriesServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/views/categories', 'categories');
         $this->loadViewsFrom(__DIR__.'/views/products', 'products');
         $this->loadViewsFrom(__DIR__.'/views/inventory', 'inventory');
+        $this->loadViewsFrom(__DIR__.'/views/giftcard', 'giftcard');
         $this->loadMigrationsFrom(__DIR__.'/migrations');
         /*$this->publishes([
         __DIR__.'/views' => base_path('resources/views/categories'),
@@ -49,5 +50,6 @@ class CategoriesServiceProvider extends ServiceProvider
         $this->app->make('Ngiasim\Categories\ProductController');
         $this->app->make('Ngiasim\Categories\InventoryController');
         $this->app->make('Ngiasim\Categories\ProductImageController');
+        $this->app->make('Ngiasim\Categories\GiftCardController');
     }
 }

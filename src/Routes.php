@@ -1,5 +1,16 @@
 <?php
 Route::group([
+		'namespace' => 'Ngiasim\Categories','domain' => Config::get('app.domains.store'), 'middleware' => ['web']
+], function () {
+	Route::group([
+			'middleware' => ['switchLanguage']
+	], function () {
+		Route::get('/giftcard', 'GiftCardController@index');
+		Route::post('/giftcard/add', 'GiftCardController@addGiftCard');
+	});
+});
+
+Route::group([
     'namespace' => 'Ngiasim\Categories','domain' => Config::get('app.domains.cockpit')
 ], function () {
 
