@@ -25,8 +25,8 @@
 
 
           <div class="col-md-12 no-padding-right">
-               <a href="bulkupload" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus"></i> Upload CSV</a>
-               <a href="products/create" class="btn btn-primary pull-right margin-right-10"><i class="glyphicon glyphicon-plus"></i> Add New</a>
+               <a href="{{ url('bulkupload') }}" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus"></i> Upload CSV</a>
+               <a href="{{ url('products/create') }}" class="btn btn-primary pull-right margin-right-10"><i class="glyphicon glyphicon-plus"></i> Add New</a>
           </div>
      </div>
      <div class="row">
